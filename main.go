@@ -14,6 +14,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type Payload struct {
@@ -22,13 +23,13 @@ type Payload struct {
 	jwt.StandardClaims
 }
 
-//TODO encrypt password
 type User struct {
-	Id       string
-	Email    string `form:"email" json:"email" xml:"email"  binding:"required"`
-	Password string `form:"password" json:"password" xml:"password"  binding:"required"`
-	Device   string `form:"DEVICE_TYPE" json:"DEVICE_TYPE" xml:"DEVICE_TYPE"  binding:"required"`
-	Type     string `form:"type" json:"type" xml:"type"  binding:"required"`
+	Id                string
+	Email             string `form:"email" json:"email" xml:"email" binding:"required"`
+	Password          string `form:"password" json:"password" xml:"password" binding:"required"`
+	EncryptedPassword string
+	Device            string `form:"DEVICE_TYPE" json:"DEVICE_TYPE" xml:"DEVICE_TYPE" binding:"required"`
+	Type              string `form:"type" json:"type" xml:"type" binding:"required"`
 }
 
 var hmacSampleSecret = "RANDOM_SECRET"
@@ -93,7 +94,6 @@ func AuthPingHandler(c *gin.Context) {
 func FindUserByEmail(email string) User {
 	var user User
 	db.Where("email = ?", email).First(&user)
-	fmt.Println(user)
 	return user
 }
 
@@ -118,10 +118,19 @@ func SignInHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	//TODO: check password in db
 
 	device := user.Device
+	password := user.Password
 	user = FindUserByEmail(user.Email)
+	if user.Email == "" {
+		c.JSON(http.StatusOK, gin.H{"status": "accout not found"})
+		return
+	}
+	err := bcrypt.CompareHashAndPassword([]byte(user.EncryptedPassword), []byte(password))
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "accout or password error"})
+		return
+	}
 	payload := GenPayload(device, "user", user.Id)
 	tokenString := Encoder(payload)
 	OnJwtDispatch(user, payload)
@@ -153,10 +162,11 @@ func OnJwtDispatch(user User, payload Payload) {
 		if err != nil {
 			exp = time.Now().Unix()
 		}
-		payload.Id = jti
-		payload.IssuedAt = time.Now().Unix()
-		payload.ExpiresAt = exp
-		RevokeJwt(payload, user)
+		newPayload := payload
+		newPayload.Id = jti
+		newPayload.IssuedAt = time.Now().Unix()
+		newPayload.ExpiresAt = exp
+		RevokeJwt(newPayload, user)
 	}
 
 	rdb.Set(ctx, fmt.Sprintf("user_device_jwt:%s:%s", user.Id, payload.Device), fmt.Sprintf("%s:%d", payload.Id, payload.ExpiresAt), time.Unix(payload.ExpiresAt, 0).Sub(iat))
@@ -165,7 +175,9 @@ func OnJwtDispatch(user User, payload Payload) {
 func Encoder(payload Payload) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
 	tokenString, err := token.SignedString([]byte(hmacSampleSecret))
-	fmt.Println(err)
+	if err != nil {
+		fmt.Println(err)
+	}
 	return tokenString
 }
 
