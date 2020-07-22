@@ -32,10 +32,18 @@ type User struct {
 	Type              string `form:"type" json:"type" xml:"type" binding:"required"`
 }
 
+type ChangePassword struct {
+	OriginPassword  string `form:"origin_password" json:"origin_password" xml:"origin_password" binding:"required"`
+	Password        string `form:"password" json:"password" xml:"password" binding:"required"`
+	PasswordConfirm string `form:"password_confirm" json:"password_confirm" xml:"password_confirm" binding:"required"`
+}
+
 var hmacSampleSecret = "RANDOM_SECRET"
 var ctx = context.Background()
 var db *gorm.DB
 var rdb *redis.Client
+
+var DEVICES = map[string]bool{"WINDOWS": true, "MAC": true, "ANDROID": true, "IOS": true}
 
 func ConnectDB() {
 	var err error
@@ -73,6 +81,7 @@ func main() {
 	router.GET("/ping", PingHandler)
 	router.GET("/auth_ping", AuthPingHandler)
 	router.POST("/sign_in", SignInHandler)
+	router.POST("/change_password", ChangePasswordHandler)
 	router.Run(":3000")
 }
 
@@ -81,9 +90,7 @@ func PingHandler(c *gin.Context) {
 }
 
 func AuthPingHandler(c *gin.Context) {
-	bear := c.Request.Header.Get("Authorization")
-	token := strings.Replace(bear, "Bear ", "", 1)
-	_, err := Decoder(token)
+	_, err := Auth(c)
 	if err != nil {
 		c.String(http.StatusUnauthorized, err.Error())
 		return
@@ -91,9 +98,25 @@ func AuthPingHandler(c *gin.Context) {
 	c.String(http.StatusOK, "auth pong")
 }
 
+func Auth(c *gin.Context) (string, error) {
+	bear := c.Request.Header.Get("Authorization")
+	token := strings.Replace(bear, "Bearer ", "", 1)
+	sub, err := Decoder(token)
+	if err != nil {
+		return "", err
+	}
+	return sub, nil
+}
+
 func FindUserByEmail(email string) User {
 	var user User
 	db.Where("email = ?", email).First(&user)
+	return user
+}
+
+func FindUserById(id string) User {
+	var user User
+	db.Where("id = ?", id).First(&user)
 	return user
 }
 
@@ -120,6 +143,11 @@ func SignInHandler(c *gin.Context) {
 	}
 
 	device := user.Device
+	if _, ok := DEVICES[device]; !ok {
+		c.JSON(http.StatusOK, gin.H{"status": "error device"})
+		return
+	}
+
 	password := user.Password
 	user = FindUserByEmail(user.Email)
 	if user.Email == "" {
@@ -133,10 +161,47 @@ func SignInHandler(c *gin.Context) {
 	}
 	payload := GenPayload(device, "user", user.Id)
 	tokenString := Encoder(payload)
-	OnJwtDispatch(user, payload)
+	OnJwtDispatch(payload)
 
-	c.Header("Authorization", "Bear "+tokenString)
+	c.Header("Authorization", "Bearer "+tokenString)
 	c.JSON(http.StatusOK, gin.H{"status": "login success"})
+}
+
+func ChangePasswordHandler(c *gin.Context) {
+	sub, err := Auth(c)
+	if err != nil {
+		c.String(http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	var change ChangePassword
+	if err := c.ShouldBind(&change); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if change.Password != change.PasswordConfirm {
+		c.JSON(http.StatusOK, gin.H{"status": "password and password confirm not match"})
+		return
+	}
+
+	user := FindUserById(sub)
+	err = bcrypt.CompareHashAndPassword([]byte(user.EncryptedPassword), []byte(change.OriginPassword))
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"status": "origin password error"})
+		return
+	}
+	hash, err := bcrypt.GenerateFromPassword([]byte(change.Password), bcrypt.DefaultCost)
+	if err != nil {
+		fmt.Println(err)
+	}
+	encryptedPassword := string(hash)
+	db.Model(&user).Updates(User{EncryptedPassword: encryptedPassword})
+	payload := GenPayload("", "user", user.Id)
+	for device, _ := range DEVICES {
+		payload.Device = device
+		RevokeLastJwt(payload)
+	}
+	c.JSON(http.StatusOK, gin.H{"status": "update password success"})
 }
 
 func JwtRevoked(payload Payload) bool {
@@ -144,16 +209,15 @@ func JwtRevoked(payload Payload) bool {
 	return ok == 1
 }
 
-func RevokeJwt(payload Payload, user User) {
+func RevokeJwt(payload Payload) {
 	expiration := payload.ExpiresAt - payload.IssuedAt
-	rdb.Set(ctx, fmt.Sprintf("user_blacklist:%s:%s:%s", user.Id, payload.Device, payload.Id), payload.Id, time.Duration(expiration)*time.Second)
+	rdb.Set(ctx, fmt.Sprintf("user_blacklist:%s:%s:%s", payload.Subject, payload.Device, payload.Id), payload.Id, time.Duration(expiration)*time.Second)
 }
 
-func OnJwtDispatch(user User, payload Payload) {
-	iat := time.Now()
-	lastJwt, err := rdb.Get(ctx, fmt.Sprintf("user_device_jwt:%s:%s", user.Id, payload.Device)).Result()
-	if err == redis.Nil {
-		fmt.Println("redis key not found")
+func RevokeLastJwt(payload Payload) {
+	lastJwt, err := rdb.Get(ctx, fmt.Sprintf("user_device_jwt:%s:%s", payload.Subject, payload.Device)).Result()
+	if err != nil && err != redis.Nil {
+		fmt.Println("redis err:", err)
 	}
 	if lastJwt != "" {
 		arr := strings.Split(lastJwt, ":")
@@ -162,14 +226,16 @@ func OnJwtDispatch(user User, payload Payload) {
 		if err != nil {
 			exp = time.Now().Unix()
 		}
-		newPayload := payload
-		newPayload.Id = jti
-		newPayload.IssuedAt = time.Now().Unix()
-		newPayload.ExpiresAt = exp
-		RevokeJwt(newPayload, user)
+		payload.Id = jti
+		payload.IssuedAt = time.Now().Unix()
+		payload.ExpiresAt = exp
+		RevokeJwt(payload)
 	}
+}
 
-	rdb.Set(ctx, fmt.Sprintf("user_device_jwt:%s:%s", user.Id, payload.Device), fmt.Sprintf("%s:%d", payload.Id, payload.ExpiresAt), time.Unix(payload.ExpiresAt, 0).Sub(iat))
+func OnJwtDispatch(payload Payload) {
+	RevokeLastJwt(payload)
+	rdb.Set(ctx, fmt.Sprintf("user_device_jwt:%s:%s", payload.Subject, payload.Device), fmt.Sprintf("%s:%d", payload.Id, payload.ExpiresAt), time.Unix(payload.ExpiresAt, 0).Sub(time.Now()))
 }
 
 func Encoder(payload Payload) string {
