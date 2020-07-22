@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -89,6 +90,28 @@ func AuthPingHandler(c *gin.Context) {
 	c.String(http.StatusOK, "auth pong")
 }
 
+func FindUserByEmail(email string) User {
+	var user User
+	db.Where("email = ?", email).First(&user)
+	fmt.Println(user)
+	return user
+}
+
+func GenPayload(device, scp, sub string) Payload {
+	now := time.Now()
+	return Payload{
+		Device: device,
+		Scp:    scp,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: now.Add(1 * time.Hour).Unix(),
+			Id:        uuid.New().String(),
+			NotBefore: now.Unix(),
+			IssuedAt:  now.Unix(),
+			Subject:   sub,
+		},
+	}
+}
+
 func SignInHandler(c *gin.Context) {
 	var user User
 	if err := c.ShouldBind(&user); err != nil {
@@ -96,15 +119,19 @@ func SignInHandler(c *gin.Context) {
 		return
 	}
 	//TODO: check password in db
-	//generate Token
-	tokenString := Encoder(user.Device)
-	//TODO OnJwtDispatch()
+
+	device := user.Device
+	user = FindUserByEmail(user.Email)
+	payload := GenPayload(device, "user", user.Id)
+	tokenString := Encoder(payload)
+	OnJwtDispatch(user, payload)
+
 	c.Header("Authorization", "Bear "+tokenString)
 	c.JSON(http.StatusOK, gin.H{"status": "login success"})
 }
 
-func JwtRevoked(payload Payload, user User) bool {
-	ok, _ := rdb.Exists(ctx, fmt.Sprintf("user_blacklist:%s:%s:%s", user.Id, payload.Device, payload.Id)).Result()
+func JwtRevoked(payload Payload) bool {
+	ok, _ := rdb.Exists(ctx, fmt.Sprintf("user_blacklist:%s:%s:%s", payload.Subject, payload.Device, payload.Id)).Result()
 	return ok == 1
 }
 
@@ -115,43 +142,35 @@ func RevokeJwt(payload Payload, user User) {
 
 func OnJwtDispatch(user User, payload Payload) {
 	iat := time.Now()
-	lastJwt, err := rdb.Get(ctx, fmt.Sprintf("Jwt:%s:%s", user.Id, payload.Device)).Result()
+	lastJwt, err := rdb.Get(ctx, fmt.Sprintf("user_device_jwt:%s:%s", user.Id, payload.Device)).Result()
 	if err == redis.Nil {
 		fmt.Println("redis key not found")
 	}
 	if lastJwt != "" {
 		arr := strings.Split(lastJwt, ":")
-		jti, exp := arr[0], arr[len(arr)-1]
-		fmt.Println(jti, exp)
+		jti, expStr := arr[0], arr[len(arr)-1]
+		exp, err := strconv.ParseInt(expStr, 10, 64)
+		if err != nil {
+			exp = time.Now().Unix()
+		}
+		payload.Id = jti
+		payload.IssuedAt = time.Now().Unix()
+		payload.ExpiresAt = exp
 		RevokeJwt(payload, user)
 	}
 
 	rdb.Set(ctx, fmt.Sprintf("user_device_jwt:%s:%s", user.Id, payload.Device), fmt.Sprintf("%s:%d", payload.Id, payload.ExpiresAt), time.Unix(payload.ExpiresAt, 0).Sub(iat))
 }
 
-func Encoder(device string) string {
-	now := time.Now()
-	claims := Payload{
-		Device: device,
-		Scp:    "user",
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: now.Add(1 * time.Hour).Unix(),
-			Id:        uuid.New().String(),
-			NotBefore: now.Unix(),
-			IssuedAt:  now.Unix(),
-			Subject:   "f955e4fe-723c-4f1e-88bb-12df4d1bdb55",
-		},
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	// Sign and get the complete encoded token as a string using the secret
+func Encoder(payload Payload) string {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
 	tokenString, err := token.SignedString([]byte(hmacSampleSecret))
-	fmt.Println(tokenString, err)
+	fmt.Println(err)
 	return tokenString
 }
 
 func Decoder(tokenString string) (string, error) {
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &Payload{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
@@ -161,10 +180,14 @@ func Decoder(tokenString string) (string, error) {
 		return "", err
 	}
 
-	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		sub, _ := claims["sub"]
-		return sub.(string), nil
-	} else {
-		return "", err
+	if payload, ok := token.Claims.(*Payload); ok && token.Valid {
+		sub := (*payload).Subject
+		if sub != "" && !JwtRevoked(*payload) {
+			return sub, nil
+		} else {
+			return "", fmt.Errorf("token is expired")
+		}
 	}
+
+	return "", fmt.Errorf("invalid token")
 }
