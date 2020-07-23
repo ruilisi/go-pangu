@@ -2,11 +2,12 @@ package jwt
 
 import (
 	"fmt"
-	"go-jwt/db"
 	"go-jwt/setting"
 	"strconv"
 	"strings"
 	"time"
+
+	_redis "go-jwt/redis"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-redis/redis/v8"
@@ -35,16 +36,16 @@ func GenPayload(device, scp, sub string) Payload {
 }
 
 func JwtRevoked(payload Payload) bool {
-	return db.RDBExists(fmt.Sprintf("user_blacklist:%s:%s:%s", payload.Subject, payload.Device, payload.Id))
+	return _redis.Exists(fmt.Sprintf("user_blacklist:%s:%s:%s", payload.Subject, payload.Device, payload.Id))
 }
 
 func RevokeJwt(payload Payload) {
 	expiration := payload.ExpiresAt - payload.IssuedAt
-	db.RDBSet(fmt.Sprintf("user_blacklist:%s:%s:%s", payload.Subject, payload.Device, payload.Id), payload.Id, time.Duration(expiration)*time.Second)
+	_redis.Set(fmt.Sprintf("user_blacklist:%s:%s:%s", payload.Subject, payload.Device, payload.Id), payload.Id, time.Duration(expiration)*time.Second)
 }
 
 func RevokeLastJwt(payload Payload) {
-	lastJwt, err := db.RDBGet(fmt.Sprintf("user_device_jwt:%s:%s", payload.Subject, payload.Device))
+	lastJwt, err := _redis.Get(fmt.Sprintf("user_device_jwt:%s:%s", payload.Subject, payload.Device))
 	if err != nil && err != redis.Nil {
 		fmt.Println("redis err:", err)
 	}
@@ -64,7 +65,7 @@ func RevokeLastJwt(payload Payload) {
 
 func OnJwtDispatch(payload Payload) {
 	RevokeLastJwt(payload)
-	db.RDBSet(fmt.Sprintf("user_device_jwt:%s:%s", payload.Subject, payload.Device), fmt.Sprintf("%s:%d", payload.Id, payload.ExpiresAt), time.Unix(payload.ExpiresAt, 0).Sub(time.Now()))
+	_redis.Set(fmt.Sprintf("user_device_jwt:%s:%s", payload.Subject, payload.Device), fmt.Sprintf("%s:%d", payload.Id, payload.ExpiresAt), time.Unix(payload.ExpiresAt, 0).Sub(time.Now()))
 }
 
 func Encoder(payload Payload) string {

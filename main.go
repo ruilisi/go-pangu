@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"go-jwt/db"
+	"go-jwt/redis"
 	"go-jwt/service"
 	"go-jwt/setting"
 
@@ -13,7 +14,7 @@ import (
 func init() {
 	setting.Setup()
 	db.ConnectDB()
-	db.ConnectRedis()
+	redis.ConnectRedis()
 }
 
 func main() {
