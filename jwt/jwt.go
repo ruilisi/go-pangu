@@ -3,6 +3,7 @@ package jwt
 import (
 	"fmt"
 	"go-jwt/db"
+	"go-jwt/setting"
 	"strconv"
 	"strings"
 	"time"
@@ -11,8 +12,6 @@ import (
 	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
 )
-
-var hmacSampleSecret = "RANDOM_SECRET"
 
 type Payload struct {
 	Device string `json:"device,omitempty"`
@@ -70,7 +69,7 @@ func OnJwtDispatch(payload Payload) {
 
 func Encoder(payload Payload) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
-	tokenString, err := token.SignedString([]byte(hmacSampleSecret))
+	tokenString, err := token.SignedString([]byte(setting.AppSetting.JwtSecret))
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -82,7 +81,7 @@ func Decoder(tokenString string) (string, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(hmacSampleSecret), nil
+		return []byte(setting.AppSetting.JwtSecret), nil
 	})
 	if err != nil {
 		return "", err

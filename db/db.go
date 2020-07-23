@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"go-jwt/models"
+	"go-jwt/setting"
 
 	"github.com/go-redis/redis/v8"
 	"github.com/jinzhu/gorm"
@@ -18,7 +19,13 @@ var ctx = context.Background()
 func ConnectDB() {
 	var err error
 	//replace your database
-	DB, err = gorm.Open("postgres", "host=localhost port=5432 user=postgres dbname=lingti_development password=postgres")
+	DB, err = gorm.Open(setting.DatabaseSetting.Type,
+		fmt.Sprintf("host=%v port=%v user=%v dbname=%v password=%v",
+			setting.DatabaseSetting.Host,
+			setting.DatabaseSetting.Port,
+			setting.DatabaseSetting.User,
+			setting.DatabaseSetting.Name,
+			setting.DatabaseSetting.Password))
 	if err != nil {
 		fmt.Println(err)
 		panic("failed to connect database")
@@ -27,9 +34,9 @@ func ConnectDB() {
 
 func ConnectRedis() {
 	RDB = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "", // no password set
-		DB:       0,  // use default DB
+		Addr:     setting.RedisSetting.Host,
+		Password: setting.RedisSetting.Password, // no password set
+		DB:       setting.RedisSetting.DB,       // use default DB
 	})
 
 	_, err := RDB.Ping(ctx).Result()
