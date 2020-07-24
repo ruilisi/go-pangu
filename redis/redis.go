@@ -2,26 +2,36 @@ package redis
 
 import (
 	"context"
-	"fmt"
-	"go-jwt/setting"
+	"net/url"
+	"strconv"
 	"time"
 
 	"github.com/go-redis/redis/v8"
+	"github.com/spf13/viper"
 )
 
 var RDB *redis.Client
 var ctx = context.Background()
 
 func ConnectRedis() {
+	u, err := url.Parse(viper.Get("REDIS_URL").(string))
+	if err != nil {
+		panic(err.Error())
+	}
+
+	db, err := strconv.Atoi(u.Path[1:])
+	if err != nil {
+		panic("Redis url format error")
+	}
+
 	RDB = redis.NewClient(&redis.Options{
-		Addr:     setting.RedisSetting.Host,
-		Password: setting.RedisSetting.Password, // no password set
-		DB:       setting.RedisSetting.DB,       // use default DB
+		Addr:     u.Host,
+		Password: "", // no password set
+		DB:       db, // use default DB
 	})
 
-	_, err := RDB.Ping(ctx).Result()
+	_, err = RDB.Ping(ctx).Result()
 	if err != nil {
-		fmt.Println(err)
 		panic(err)
 	}
 }

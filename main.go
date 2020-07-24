@@ -1,20 +1,18 @@
 package main
 
 import (
+	"go-jwt/conf"
 	"go-jwt/db"
 	"go-jwt/redis"
 	"go-jwt/routers"
-	"go-jwt/setting"
 )
 
 func init() {
-	setting.Setup()
+	conf.ReadConf()
 	db.ConnectDB()
 	redis.ConnectRedis()
 }
 
 func main() {
-	defer db.Close()
-
 	routers.InitRouter()
 }

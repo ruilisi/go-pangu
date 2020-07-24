@@ -2,7 +2,6 @@ package jwt
 
 import (
 	"fmt"
-	"go-jwt/setting"
 	"strconv"
 	"strings"
 	"time"
@@ -12,6 +11,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
+	"github.com/spf13/viper"
 )
 
 type Payload struct {
@@ -70,7 +70,7 @@ func OnJwtDispatch(payload Payload) {
 
 func Encoder(payload Payload) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
-	tokenString, err := token.SignedString([]byte(setting.AppSetting.JwtSecret))
+	tokenString, err := token.SignedString([]byte(viper.Get("DEVISE_JWT_SECRET_KEY").(string)))
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -82,7 +82,7 @@ func Decoder(tokenString string) (string, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(setting.AppSetting.JwtSecret), nil
+		return []byte(viper.Get("DEVISE_JWT_SECRET_KEY").(string)), nil
 	})
 	if err != nil {
 		return "", err

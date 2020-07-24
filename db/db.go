@@ -2,11 +2,14 @@ package db
 
 import (
 	"fmt"
+	"net"
+	"net/url"
 
 	"go-jwt/models"
-	"go-jwt/setting"
 
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/spf13/viper"
 )
 
 var DB *gorm.DB
@@ -14,21 +17,27 @@ var DB *gorm.DB
 func ConnectDB() {
 	var err error
 	//replace your database
-	DB, err = gorm.Open(setting.DatabaseSetting.Type,
+	u, err := url.Parse(viper.Get("DATABASE_URL").(string))
+	if err != nil {
+		panic(err.Error())
+	}
+	host, port, _ := net.SplitHostPort(u.Host)
+	p, _ := u.User.Password()
+	fmt.Println(u.Scheme, host, port, u.User.Username(), u.Path[1:], p)
+	DB, err = gorm.Open(u.Scheme,
 		fmt.Sprintf("host=%v port=%v user=%v dbname=%v password=%v",
-			setting.DatabaseSetting.Host,
-			setting.DatabaseSetting.Port,
-			setting.DatabaseSetting.User,
-			setting.DatabaseSetting.Name,
-			setting.DatabaseSetting.Password))
+			host,
+			port,
+			u.User.Username(),
+			u.Path[1:],
+			p,
+		),
+	)
 	if err != nil {
 		fmt.Println(err)
 		panic("failed to connect database")
 	}
-}
-
-func Close() {
-	DB.Close()
+	defer DB.Close()
 }
 
 func FindUserByEmail(email string) models.User {
