@@ -37,7 +37,6 @@ func ConnectDB() {
 		fmt.Println(err)
 		panic("failed to connect database")
 	}
-	defer DB.Close()
 }
 
 func FindUserByEmail(email string) models.User {
