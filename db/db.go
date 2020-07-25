@@ -10,6 +10,7 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/spf13/viper"
+	"gopkg.in/gormigrate.v1"
 )
 
 var DB *gorm.DB
@@ -23,7 +24,6 @@ func ConnectDB() {
 	}
 	host, port, _ := net.SplitHostPort(u.Host)
 	p, _ := u.User.Password()
-	fmt.Println(u.Scheme, host, port, u.User.Username(), u.Path[1:], p)
 	DB, err = gorm.Open(u.Scheme,
 		fmt.Sprintf("host=%v port=%v user=%v dbname=%v password=%v",
 			host,
@@ -36,6 +36,35 @@ func ConnectDB() {
 	if err != nil {
 		fmt.Println(err)
 		panic("failed to connect database")
+	}
+
+	m := gormigrate.New(DB, gormigrate.DefaultOptions, []*gormigrate.Migration{
+		{
+			ID: "initial",
+			Migrate: func(tx *gorm.DB) error {
+				return tx.AutoMigrate(&models.User{}).Error
+			},
+			Rollback: func(tx *gorm.DB) error {
+				return tx.DropTable("user").Error
+			},
+		},
+	})
+
+	m.InitSchema(func(tx *gorm.DB) error {
+		err := tx.AutoMigrate(
+			&models.User{},
+			// all other tables of you app
+		).Error
+		if err != nil {
+			return err
+		}
+
+		return nil
+	})
+
+	err = m.Migrate()
+	if err != nil {
+		panic("Could not migrate: " + err.Error())
 	}
 }
 
