@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"net"
 	"net/url"
+	"os/exec"
+	"strings"
 
 	"go-jwt/models"
 
@@ -13,29 +15,58 @@ import (
 	"gopkg.in/gormigrate.v1"
 )
 
-var DB *gorm.DB
+type dbParams struct {
+	Type     string
+	Host     string
+	Port     string
+	User     string
+	Password string
+	DBName   string
+}
 
-func ConnectDB() {
-	var err error
-	//replace your database
+var DB *gorm.DB
+var params dbParams
+
+func init() {
 	u, err := url.Parse(viper.Get("DATABASE_URL").(string))
 	if err != nil {
 		panic(err.Error())
 	}
 	host, port, _ := net.SplitHostPort(u.Host)
 	p, _ := u.User.Password()
-	DB, err = gorm.Open(u.Scheme,
+	params = dbParams{u.Scheme, host, port, u.User.Username(), p, u.Path[1:]}
+}
+
+func CreateDB() error {
+	cmd := exec.Command("createdb", "-p", params.Port, "-h", params.Host, "-U", params.User, "-e", params.DBName)
+	return cmd.Run()
+}
+
+func openDB() (err error) {
+	DB, err = gorm.Open(params.Type,
 		fmt.Sprintf("host=%v port=%v user=%v dbname=%v password=%v",
-			host,
-			port,
-			u.User.Username(),
-			u.Path[1:],
-			p,
+			params.Host,
+			params.Port,
+			params.User,
+			params.DBName,
+			params.Password,
 		),
 	)
-	if err != nil {
-		fmt.Println(err)
-		panic("failed to connect database")
+	return
+}
+
+func ConnectDB() {
+	if err := openDB(); err != nil {
+		if strings.Contains(err.Error(), fmt.Sprintf("\"%v\" does not exist", params.DBName)) {
+			if err = CreateDB(); err != nil {
+				panic(err.Error())
+			}
+			if err = openDB(); err != nil {
+				panic(err.Error())
+			}
+		} else {
+			panic(err.Error())
+		}
 	}
 
 	m := gormigrate.New(DB, gormigrate.DefaultOptions, []*gormigrate.Migration{
@@ -62,7 +93,7 @@ func ConnectDB() {
 		return nil
 	})
 
-	err = m.Migrate()
+	err := m.Migrate()
 	if err != nil {
 		panic("Could not migrate: " + err.Error())
 	}

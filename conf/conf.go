@@ -7,7 +7,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-func ReadConf() {
+func init() {
 	viper.SetConfigType("yaml") // or viper.SetConfigType("YAML")
 	// any approach to require this configuration into your program.
 	data, err := ioutil.ReadFile("conf/application.yml")
