@@ -4,6 +4,7 @@ import (
 	"go-jwt/models"
 
 	"github.com/spf13/viper"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -31,8 +32,13 @@ func ConnectDB() {
 	}
 
 	DB.AutoMigrate(&models.User{})
-	user := models.User{Email: "test@123.com", EncryptedPassword: "test123"}
-	DB.Create(&user)
+	email := "test@123.com"
+	user := FindUserByEmail(email)
+	if user.Email == "" {
+		hash, _ := bcrypt.GenerateFromPassword([]byte("test123"), bcrypt.DefaultCost)
+		user := models.User{Email: email, EncryptedPassword: string(hash)}
+		DB.Create(&user)
+	}
 }
 
 func FindUserByEmail(email string) models.User {
