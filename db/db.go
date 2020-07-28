@@ -10,10 +10,18 @@ import (
 
 var DB *gorm.DB
 
+type PGExtension struct {
+	Extname string
+}
+
 func openDB() (err error) {
 	url := viper.Get("DATABASE_URL").(string)
 	DB, err = gorm.Open(postgres.Open(url), &gorm.Config{})
-	DB.Exec("CREATE EXTENSION pgcrypto")
+	var pgExtension PGExtension
+	DB.Table("pg_extension").Where("extname = ?", "pgcrypto").Find(&pgExtension)
+	if pgExtension.Extname != "pgcrypto" {
+		DB.Exec("CREATE EXTENSION pgcrypto")
+	}
 	return
 }
 

@@ -1,6 +1,6 @@
-## TODO
+## Ready
 
-- create db
-- CREATE EXTENSION pgcrypto;
+- you should install psql
+- run `./bin/create_db.sh` to create database
 
 
