@@ -1,4 +1,4 @@
 DEVISE_JWT_SECRET_KEY: RANDOM_SECRET
 HTTP_PORT: 3000
-DATABASE_URL: postgres://postgres:postgres@localhost:5432/development?pool=25&encoding=unicode&schema_search_path=public
+DATABASE_URL: postgres://postgres:postgres@localhost:5432/my_test_db?sslmode=disable
 REDIS_URL: redis://localhost:6379/0

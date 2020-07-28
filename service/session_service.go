@@ -1,9 +1,9 @@
 package service
 
 import (
+	"go-jwt/args"
 	"go-jwt/db"
 	"go-jwt/jwt"
-	"go-jwt/models"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -11,20 +11,20 @@ import (
 )
 
 func SignInHandler(c *gin.Context) {
-	var user models.User
-	if err := c.ShouldBind(&user); err != nil {
+	var signIn args.SignIn
+	if err := c.ShouldBind(&signIn); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	device := user.Device
+	device := signIn.Device
 	if _, ok := DEVICES[device]; !ok {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "error device"})
 		return
 	}
 
-	password := user.Password
-	user = db.FindUserByEmail(user.Email)
+	password := signIn.Password
+	user := db.FindUserByEmail(signIn.Email)
 	if user.Email == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{"status": "accout not found"})
 		return
@@ -34,7 +34,7 @@ func SignInHandler(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"status": "accout or password error"})
 		return
 	}
-	payload := jwt.GenPayload(device, "user", user.Id)
+	payload := jwt.GenPayload(device, "user", user.ID.String())
 	tokenString := jwt.Encoder(payload)
 	jwt.OnJwtDispatch(payload)
 

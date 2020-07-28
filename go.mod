@@ -11,4 +11,6 @@ require (
 	github.com/spf13/viper v1.7.0
 	golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899
 	gopkg.in/gormigrate.v1 v1.6.0
+	gorm.io/driver/postgres v0.2.6
+	gorm.io/gorm v0.2.24
 )
