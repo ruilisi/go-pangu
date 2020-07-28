@@ -10,14 +10,10 @@ import (
 
 var DB *gorm.DB
 
-// func CreateDB() error {
-// cmd := exec.Command("createdb", viper.Get("DATABASE_URL").(string))
-// return cmd.Run()
-// }
-
 func openDB() (err error) {
 	url := viper.Get("DATABASE_URL").(string)
 	DB, err = gorm.Open(postgres.Open(url), &gorm.Config{})
+	DB.Exec("CREATE EXTENSION pgcrypto")
 	return
 }
 
@@ -26,10 +22,9 @@ func ConnectDB() {
 		panic(err.Error())
 	}
 
-	// DB.Migrator().DropTable(&models.User{})
 	DB.AutoMigrate(&models.User{})
-	// user := models.User{Email: "Jinzhu12"}
-	// DB.Create(&user)
+	user := models.User{Email: "test@123.com", EncryptedPassword: "test123"}
+	DB.Create(&user)
 }
 
 func FindUserByEmail(email string) models.User {
