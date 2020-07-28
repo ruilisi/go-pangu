@@ -4,11 +4,39 @@ import (
 	"go-jwt/args"
 	"go-jwt/db"
 	"go-jwt/jwt"
+	"go-jwt/models"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
 )
+
+func SignUpHandler(c *gin.Context) {
+	var signUp args.SignUp
+	if err := c.ShouldBind(&signUp); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user := db.FindUserByEmail(signUp.Email)
+	if user.Email != "" {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "accout exists"})
+		return
+	}
+
+	if signUp.Password != signUp.PasswordConfirm {
+		c.JSON(http.StatusBadRequest, gin.H{"status": "password confirmation dismatch"})
+		return
+	}
+
+	bcryptedPassword, err := bcrypt.GenerateFromPassword([]byte(signUp.Password), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"status": err.Error()})
+	}
+	user = models.User{Email: signUp.Email, EncryptedPassword: string(bcryptedPassword)}
+	db.DB.Create(&user)
+	c.JSON(http.StatusOK, gin.H{"status": "register success"})
+}
 
 func SignInHandler(c *gin.Context) {
 	var signIn args.SignIn
