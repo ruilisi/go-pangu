@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"go-jwt/conf"
 	"go-jwt/jwt"
 	"net/http"
 	"strings"
@@ -18,6 +19,18 @@ func Auth() gin.HandlerFunc {
 			c.String(http.StatusUnauthorized, err.Error())
 		} else {
 			c.Set("sub", sub)
+		}
+		c.Next()
+	}
+}
+
+func CheckDevice() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		device := c.Request.FormValue("DEVICE_TYPE")
+		if _, ok := conf.DEVICES[device]; !ok {
+			c.Abort()
+			c.String(http.StatusBadRequest, "error device")
+			return
 		}
 		c.Next()
 	}

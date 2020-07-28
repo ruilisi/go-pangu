@@ -17,12 +17,6 @@ func SignInHandler(c *gin.Context) {
 		return
 	}
 
-	device := signIn.Device
-	if _, ok := DEVICES[device]; !ok {
-		c.JSON(http.StatusBadRequest, gin.H{"status": "error device"})
-		return
-	}
-
 	password := signIn.Password
 	user := db.FindUserByEmail(signIn.Email)
 	if user.Email == "" {
@@ -34,7 +28,7 @@ func SignInHandler(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"status": "accout or password error"})
 		return
 	}
-	payload := jwt.GenPayload(device, "user", user.ID.String())
+	payload := jwt.GenPayload(signIn.Device, "user", user.ID.String())
 	tokenString := jwt.Encoder(payload)
 	jwt.OnJwtDispatch(payload)
 
