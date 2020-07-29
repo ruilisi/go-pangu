@@ -1,8 +1,10 @@
 package db
 
 import (
+	"fmt"
 	"go-jwt/conf"
 	"go-jwt/models"
+	"strings"
 
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/postgres"
@@ -15,21 +17,34 @@ type PGExtension struct {
 	Extname string
 }
 
-func openDB() (err error) {
+func openDB() {
+	var err error
 	url := conf.GetEnv("DATABASE_URL")
-	DB, err = gorm.Open(postgres.Open(url), &gorm.Config{})
+	base_url := conf.GetEnv("BASE_DATABASE_URL")
+
+	if DB, err = gorm.Open(postgres.Open(url), &gorm.Config{}); err != nil {
+		if strings.Contains(err.Error(), "does not exist") {
+			if DB, err = gorm.Open(postgres.Open(base_url), &gorm.Config{}); err != nil {
+				panic(err.Error())
+			}
+			DB = DB.Exec(fmt.Sprintf("CREATE DATABASE %s;", conf.GetEnv("DATABASE_NAME")))
+			if DB, err = gorm.Open(postgres.Open(conf.GetEnv("DATABASE_URL")), &gorm.Config{}); err != nil {
+				panic(err.Error())
+			}
+		} else {
+			panic(err.Error())
+		}
+	}
+
 	var pgExtension PGExtension
 	DB.Table("pg_extension").Where("extname = ?", "pgcrypto").Find(&pgExtension)
 	if pgExtension.Extname != "pgcrypto" {
 		DB.Exec("CREATE EXTENSION pgcrypto")
 	}
-	return
 }
 
 func ConnectDB() {
-	if err := openDB(); err != nil {
-		panic(err.Error())
-	}
+	openDB()
 
 	DB.AutoMigrate(&models.User{})
 	email := "test@123.com"

@@ -19,6 +19,7 @@ func ConnectRedis() {
 		panic(err.Error())
 	}
 
+	password, _ := u.User.Password()
 	db, err := strconv.Atoi(u.Path[1:])
 	if err != nil {
 		panic("Redis url format error")
@@ -26,8 +27,8 @@ func ConnectRedis() {
 
 	RDB = redis.NewClient(&redis.Options{
 		Addr:     u.Host,
-		Password: "", // no password set
-		DB:       db, // use default DB
+		Password: password, // no password set
+		DB:       db,       // use default DB
 	})
 
 	_, err = RDB.Ping(ctx).Result()
