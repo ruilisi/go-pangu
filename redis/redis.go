@@ -2,19 +2,19 @@ package redis
 
 import (
 	"context"
+	"go-jwt/conf"
 	"net/url"
 	"strconv"
 	"time"
 
 	"github.com/go-redis/redis/v8"
-	"github.com/spf13/viper"
 )
 
 var RDB *redis.Client
 var ctx = context.Background()
 
 func ConnectRedis() {
-	u, err := url.Parse(viper.Get("REDIS_URL").(string))
+	u, err := url.Parse(conf.GetEnv("REDIS_URL"))
 	if err != nil {
 		panic(err.Error())
 	}

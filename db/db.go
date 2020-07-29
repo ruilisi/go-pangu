@@ -1,9 +1,9 @@
 package db
 
 import (
+	"go-jwt/conf"
 	"go-jwt/models"
 
-	"github.com/spf13/viper"
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -16,7 +16,7 @@ type PGExtension struct {
 }
 
 func openDB() (err error) {
-	url := viper.Get("DATABASE_URL").(string)
+	url := conf.GetEnv("DATABASE_URL")
 	DB, err = gorm.Open(postgres.Open(url), &gorm.Config{})
 	var pgExtension PGExtension
 	DB.Table("pg_extension").Where("extname = ?", "pgcrypto").Find(&pgExtension)

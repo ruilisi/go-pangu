@@ -3,10 +3,10 @@ package routers
 import (
 	"fmt"
 
+	"go-jwt/conf"
 	"go-jwt/service"
 
 	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
 )
 
 func InitRouter() {
@@ -17,5 +17,5 @@ func InitRouter() {
 	router.Use(Auth())
 	router.GET("/auth_ping", service.AuthPingHandler)
 	router.POST("/change_password", service.ChangePasswordHandler)
-	router.Run(fmt.Sprintf(":%v", viper.Get("HTTP_PORT")))
+	router.Run(fmt.Sprintf(":%v", conf.GetEnv("HTTP_PORT")))
 }

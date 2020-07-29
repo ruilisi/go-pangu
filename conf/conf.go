@@ -2,7 +2,9 @@ package conf
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
+	"os"
 
 	"github.com/spf13/viper"
 )
@@ -18,4 +20,12 @@ func init() {
 	}
 
 	viper.ReadConfig(bytes.NewBuffer(data))
+}
+
+func GetEnv(env string) string {
+	if viper.Get("GIN_ENV").(string) != "production" {
+		return fmt.Sprintf("%v", viper.Get(env))
+	} else {
+		return os.Getenv(env)
+	}
 }
