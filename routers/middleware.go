@@ -29,7 +29,7 @@ func Auth() gin.HandlerFunc {
 
 func CheckDevice() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		device := c.Request.FormValue("DEVICE_TYPE")
+		device := c.Request.FormValue("device_type")
 		if _, ok := conf.DEVICES[device]; ok {
 			c.Next()
 			return

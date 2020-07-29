@@ -15,8 +15,11 @@ func InitRouter() {
 	router.GET("/ping", service.PingHandler)
 	router.POST("/sign_up", service.SignUpHandler)
 	router.POST("/sign_in", CheckDevice(), service.SignInHandler)
-	router.Use(Auth())
-	router.GET("/auth_ping", service.AuthPingHandler)
-	router.POST("/change_password", service.ChangePasswordHandler)
+	authorized := router.Group("/")
+	authorized.Use(Auth())
+	{
+		authorized.GET("/auth_ping", service.AuthPingHandler)
+		authorized.POST("/change_password", service.ChangePasswordHandler)
+	}
 	router.Run(fmt.Sprintf(":%v", conf.GetEnv("HTTP_PORT")))
 }
