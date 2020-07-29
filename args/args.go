@@ -9,7 +9,7 @@ type SignUp struct {
 type SignIn struct {
 	Email    string `form:"email" json:"email" xml:"email" binding:"required"`
 	Password string `form:"password" json:"password" xml:"password" binding:"required"`
-	Device   string `form:"DEVICE_TYPE" json:"DEVICE_TYPE" xml:"DEVICE_TYPE" binding:"required"`
+	Device   string `form:"device_type" json:"device_type" xml:"device_type" binding:"required"`
 }
 
 type ChangePassword struct {
