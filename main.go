@@ -13,9 +13,5 @@ func init() {
 }
 
 func main() {
-	// if db.DB != nil {
-	// defer db.DB.Close()
-	// }
-
 	routers.InitRouter()
 }
