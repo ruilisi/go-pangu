@@ -11,6 +11,7 @@ import (
 
 func InitRouter() {
 	router := gin.Default()
+
 	router.GET("/ping", service.PingHandler)
 	router.POST("/sign_up", service.SignUpHandler)
 	router.POST("/sign_in", CheckDevice(), service.SignInHandler)

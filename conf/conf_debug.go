@@ -10,7 +10,6 @@ import (
 )
 
 func init() {
-	viper.AutomaticEnv()
 	viper.SetConfigType("yaml") // or viper.SetConfigType("YAML")
 	// any approach to require this configuration into your program.
 	data, err := ioutil.ReadFile("application.yml")

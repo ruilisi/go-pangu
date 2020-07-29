@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	_ "go-jwt/conf"
 	"go-jwt/db"
 	"go-jwt/redis"
@@ -13,5 +14,6 @@ func init() {
 }
 
 func main() {
+	fmt.Println("server starting...")
 	routers.InitRouter()
 }
