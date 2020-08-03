@@ -13,8 +13,13 @@ func InitRouter() {
 	router := gin.Default()
 
 	router.GET("/ping", service.PingHandler)
-	router.POST("/sign_up", service.SignUpHandler)
-	router.POST("/sign_in", CheckDevice(), service.SignInHandler)
+
+	users := router.Group("/users")
+	{
+		users.POST("/sign_up", service.SignUpHandler)
+		users.POST("/sign_in", CheckDevice(), service.SignInHandler)
+	}
+
 	authorized := router.Group("/")
 	authorized.Use(Auth())
 	{
