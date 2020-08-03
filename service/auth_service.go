@@ -21,8 +21,7 @@ func CurrentUser(c *gin.Context) *models.User {
 }
 
 func AuthPingHandler(c *gin.Context) {
-	user := CurrentUser(c)
-	c.String(http.StatusOK, fmt.Sprintf("auth pong: %s", user.Email))
+	c.String(http.StatusOK, fmt.Sprintf("pong"))
 }
 
 func ChangePasswordHandler(c *gin.Context) {
