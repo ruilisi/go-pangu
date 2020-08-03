@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"go-jwt/args"
 	_ "go-jwt/conf"
 	"go-jwt/db"
 	"go-jwt/redis"
@@ -9,11 +10,20 @@ import (
 )
 
 func init() {
-	db.ConnectDB()
 	redis.ConnectRedis()
 }
 
 func main() {
-	fmt.Println("server starting...")
-	routers.InitRouter()
+	args.ParseCmd()
+	switch args.Cmd.DB {
+	case "create":
+		db.Create()
+	case "migrate":
+		db.Migrate()
+	case "seed":
+		db.Seed()
+	default:
+		fmt.Println("server starting...")
+		routers.InitRouter()
+	}
 }
