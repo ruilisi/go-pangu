@@ -1,6 +1,6 @@
 FROM alpine:3.10
 WORKDIR /app
-ADD invoice .
+ADD dist/go-pangu-amd64-release-linux go-pangu
 COPY application.yml .
-RUN chmod +x invoice
-CMD ["/app/invoice"]
+RUN chmod +x go-pangu
+CMD ["/app/go-pangu"]
