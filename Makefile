@@ -3,7 +3,7 @@ VERSION := 1.0.0.0
 BUILD := $(shell git rev-parse --short HEAD)
 PROJECTNAME := go-pangu
 GOBASE := $(shell pwd)
-GOBIN := $(GOBASE)/bin
+GODIST := $(GOBASE)/dist
 GOPATH := $(shell echo $(HOME)/go)
 GOARCH ?= $(shell go env GOARCH)
 GOOS ?= $(shell go env GOOS)
@@ -19,13 +19,13 @@ SUBDIRS := c/
 all: linux
 
 linux:
-	GOARCH=amd64 GOOS=linux $(GOBUILD) --tags linux -o $(GOBIN)/$(PROJECTNAME)-$(VERSION)-$(GOARCH)-$(GOOS)
+	GOARCH=amd64 GOOS=linux $(GOBUILD) --tags linux -o $(GODIST)/$(PROJECTNAME)-$(VERSION)-$(GOARCH)-$(GOOS)
 
 linux-cli: arm amd64 386
 
 go-get:
 	@echo "  >  Checking if there is any missing dependencies..."
-	@GOPATH=$(GOPATH) GOBIN=$(GOBIN) go get $(get)
+	@GOPATH=$(GOPATH) GODIST=$(GODIST) go get $(get)
 
 ## install: Install missing dependencies. Runs `go get` internally. e.g; make install get=github.com/foo/bar
 install: go-get
@@ -36,7 +36,7 @@ clean:
 .PHONY: clean
 
 go-clean:
-	@GOPATH=$(GOPATH) GOBIN=$(GOBIN) go clean
+	@GOPATH=$(GOPATH) GODIST=$(GODIST) go clean
 .PHONY: go-clean
 
 test:

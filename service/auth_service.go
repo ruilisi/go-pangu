@@ -2,15 +2,10 @@ package service
 
 import (
 	"fmt"
-<<<<<<< Updated upstream
-	"go-jwt/args"
-=======
-	"go-jwt/params"
-	"go-jwt/conf"
->>>>>>> Stashed changes
 	"go-jwt/db"
 	"go-jwt/jwt"
 	"go-jwt/models"
+	"go-jwt/params"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
