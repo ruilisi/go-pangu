@@ -53,8 +53,8 @@ func Seed() {
 	user := FindUserByEmail(email)
 	if user.Email == "" {
 		hash, _ := bcrypt.GenerateFromPassword([]byte("test123"), bcrypt.DefaultCost)
-		user = models.User{Email: email, EncryptedPassword: string(hash)}
-		DB.Create(&user)
+		user = &models.User{Email: email, EncryptedPassword: string(hash)}
+		DB.Create(user)
 	}
 }
 
@@ -63,14 +63,34 @@ func Migrate() {
 	DB.AutoMigrate(&models.User{})
 }
 
-func FindUserByEmail(email string) models.User {
-	var user models.User
-	DB.Where("email = ?", email).First(&user)
-	return user
+func Drop() {
+	dbURL := conf.GetEnv("DATABASE_URL")
+	if uri, err := url.Parse(dbURL); err != nil {
+		panic(err)
+	} else {
+		path := uri.Path
+		uri.Path = ""
+		baseDb, err := gorm.Open(postgres.Open(uri.String()), &gorm.Config{})
+		if err != nil {
+			panic(err)
+		}
+		baseDb.Exec(fmt.Sprintf("DROP DATABASE %s;", path[1:]))
+	}
 }
 
-func FindUserById(id string) models.User {
+func Close() {
+	sqlDB, _ := DB.DB()
+	sqlDB.Close()
+}
+
+func FindUserByEmail(email string) *models.User {
+	var user models.User
+	DB.Where("email = ?", email).First(&user)
+	return &user
+}
+
+func FindUserById(id string) *models.User {
 	var user models.User
 	DB.Where("id = ?", id).First(&user)
-	return user
+	return &user
 }

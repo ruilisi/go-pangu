@@ -12,8 +12,17 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+func CurrentUser(c *gin.Context) *models.User {
+	sub, ok := c.Get("sub")
+	if !ok {
+		return &models.User{}
+	}
+	return db.FindUserById(fmt.Sprintf("%s", sub))
+}
+
 func AuthPingHandler(c *gin.Context) {
-	c.String(http.StatusOK, "auth pong")
+	user := CurrentUser(c)
+	c.String(http.StatusOK, fmt.Sprintf("auth pong: %s", user.Email))
 }
 
 func ChangePasswordHandler(c *gin.Context) {

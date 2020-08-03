@@ -1,10 +1,10 @@
 package service
 
 import (
-	"go-jwt/params"
 	"go-jwt/db"
 	"go-jwt/jwt"
 	"go-jwt/models"
+	"go-jwt/params"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -33,8 +33,8 @@ func SignUpHandler(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": err.Error()})
 	}
-	user = models.User{Email: signUp.Email, EncryptedPassword: string(bcryptedPassword)}
-	db.DB.Create(&user)
+	user = &models.User{Email: signUp.Email, EncryptedPassword: string(bcryptedPassword)}
+	db.DB.Create(user)
 	c.JSON(http.StatusOK, gin.H{"status": "register success"})
 }
 

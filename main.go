@@ -24,6 +24,8 @@ func main() {
 		db.Seed()
 	default:
 		fmt.Println("server starting...")
+		db.Open()
+		defer db.Close()
 		routers.InitRouter()
 	}
 }
