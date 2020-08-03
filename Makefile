@@ -1,5 +1,4 @@
 VERSION := 1.0.0.0
-# $(shell git describe --tags)
 BUILD := $(shell git rev-parse --short HEAD)
 PROJECTNAME := go-pangu
 GOBASE := $(shell pwd)
@@ -11,17 +10,17 @@ GOFILES=`find . -name "*.go" -type f -not -path "./vendor/*"`
 CC=gcc
 
 LDFLAGS=-ldflags "-X=main.Version=$(VERSION) -X=main.Build=$(BUILD) -w -s"
-GOBUILD=go build $(LDFLAGS)
+GOBUILD=GOARCH=amd64 GOOS=linux CGO_ENABLED=0 go build $(LDFLAGS)
 # The -w and -s flags reduce binary sizes by excluding unnecessary symbols and debug info
-TOOLCHAIN=${ANDROID_NDK_HOME}/toolchains/llvm/prebuilt/darwin-x86_64/bin
 SUBDIRS := c/
 
-all: linux
+all: debug release
 
-linux:
-	GOARCH=amd64 GOOS=linux $(GOBUILD) --tags linux -o $(GODIST)/$(PROJECTNAME)-$(VERSION)-$(GOARCH)-$(GOOS)
+debug:
+	$(GOBUILD) -tags debug -o $(GODIST)/$(PROJECTNAME)-$(GOARCH)-debug-$(GOOS)
 
-linux-cli: arm amd64 386
+release:
+	$(GOBUILD) -tags release -o $(GODIST)/$(PROJECTNAME)-$(GOARCH)-release-$(GOOS)
 
 go-get:
 	@echo "  >  Checking if there is any missing dependencies..."
