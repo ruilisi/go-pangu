@@ -24,11 +24,16 @@ func openDB() {
 
 	if DB, err = gorm.Open(postgres.Open(url), &gorm.Config{}); err != nil {
 		if strings.Contains(err.Error(), "does not exist") {
-			if DB, err = gorm.Open(postgres.Open(base_url), &gorm.Config{}); err != nil {
+			baseDb, err := gorm.Open(postgres.Open(base_url), &gorm.Config{})
+			if err != nil {
 				panic(err.Error())
 			}
-			DB = DB.Exec(fmt.Sprintf("CREATE DATABASE %s;", conf.GetEnv("DATABASE_NAME")))
-			if DB, err = gorm.Open(postgres.Open(conf.GetEnv("DATABASE_URL")), &gorm.Config{}); err != nil {
+			baseDb = baseDb.Exec(fmt.Sprintf("CREATE DATABASE %s;", conf.GetEnv("DATABASE_NAME")))
+			sqlDB, err := baseDb.DB()
+			sqlDB.Close()
+
+			DB, err = gorm.Open(postgres.Open(conf.GetEnv("DATABASE_URL")), &gorm.Config{})
+			if err != nil {
 				panic(err.Error())
 			}
 		} else {
@@ -51,7 +56,7 @@ func ConnectDB() {
 	user := FindUserByEmail(email)
 	if user.Email == "" {
 		hash, _ := bcrypt.GenerateFromPassword([]byte("test123"), bcrypt.DefaultCost)
-		user := models.User{Email: email, EncryptedPassword: string(hash)}
+		user = models.User{Email: email, EncryptedPassword: string(hash)}
 		DB.Create(&user)
 	}
 }
