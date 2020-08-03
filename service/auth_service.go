@@ -3,7 +3,6 @@ package service
 import (
 	"fmt"
 	"go-jwt/args"
-	"go-jwt/conf"
 	"go-jwt/db"
 	"go-jwt/jwt"
 	"go-jwt/models"
@@ -47,10 +46,7 @@ func ChangePasswordHandler(c *gin.Context) {
 
 	encryptedPassword := string(hash)
 	db.DB.Model(&user).Updates(models.User{EncryptedPassword: encryptedPassword})
-	payload := jwt.GenPayload("", "user", user.ID.String())
-	for device, _ := range conf.DEVICES {
-		payload.Device = device
-		jwt.RevokeLastJwt(payload)
-	}
+	payload := jwt.GenPayload("user", user.ID.String())
+	jwt.RevokeLastJwt(payload)
 	c.JSON(http.StatusOK, gin.H{"status": "update password success"})
 }

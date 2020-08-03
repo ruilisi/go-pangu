@@ -15,16 +15,14 @@ import (
 )
 
 type Payload struct {
-	Device string `json:"device,omitempty"`
-	Scp    string `json:"scp,omitempty"`
+	Scp string `json:"scp,omitempty"`
 	jwt.StandardClaims
 }
 
-func GenPayload(device, scp, sub string) Payload {
+func GenPayload(scp, sub string) Payload {
 	now := time.Now()
 	return Payload{
-		Device: device,
-		Scp:    scp,
+		Scp: scp,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: now.Add(1 * time.Hour).Unix(),
 			Id:        uuid.New().String(),
@@ -36,16 +34,16 @@ func GenPayload(device, scp, sub string) Payload {
 }
 
 func JwtRevoked(payload Payload) bool {
-	return _redis.Exists(fmt.Sprintf("user_blacklist:%s:%s:%s", payload.Subject, payload.Device, payload.Id))
+	return _redis.Exists(fmt.Sprintf("user_blacklist:%s:%s", payload.Subject, payload.Id))
 }
 
 func RevokeJwt(payload Payload) {
 	expiration := payload.ExpiresAt - payload.IssuedAt
-	_redis.Set(fmt.Sprintf("user_blacklist:%s:%s:%s", payload.Subject, payload.Device, payload.Id), payload.Id, time.Duration(expiration)*time.Second)
+	_redis.Set(fmt.Sprintf("user_blacklist:%s:%s", payload.Subject, payload.Id), payload.Id, time.Duration(expiration)*time.Second)
 }
 
 func RevokeLastJwt(payload Payload) {
-	lastJwt, err := _redis.Get(fmt.Sprintf("user_device_jwt:%s:%s", payload.Subject, payload.Device))
+	lastJwt, err := _redis.Get(fmt.Sprintf("user_jwt:%s", payload.Subject))
 	if err != nil && err != redis.Nil {
 		fmt.Println("redis err:", err)
 	}
@@ -65,7 +63,7 @@ func RevokeLastJwt(payload Payload) {
 
 func OnJwtDispatch(payload Payload) {
 	RevokeLastJwt(payload)
-	_redis.Set(fmt.Sprintf("user_device_jwt:%s:%s", payload.Subject, payload.Device), fmt.Sprintf("%s:%d", payload.Id, payload.ExpiresAt), time.Unix(payload.ExpiresAt, 0).Sub(time.Now()))
+	_redis.Set(fmt.Sprintf("user_jwt:%s", payload.Subject), fmt.Sprintf("%s:%d", payload.Id, payload.ExpiresAt), time.Unix(payload.ExpiresAt, 0).Sub(time.Now()))
 }
 
 func Encoder(payload Payload) string {

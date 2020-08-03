@@ -1,6 +1,6 @@
 # Golang-pangu
 
-Golang-pangu is based on [Gin](https://github.com/gin-gonic/gin), [jwt-go](https://github.com/dgrijalva/jwt-go), [gorm](https://github.com/go-gorm/gorm), it realize single device multi-segment login.
+Golang-pangu is based on [Gin](https://github.com/gin-gonic/gin), [jwt-go](https://github.com/dgrijalva/jwt-go), [gorm](https://github.com/go-gorm/gorm), it realize single device login.
 
 ## Start
 
@@ -16,15 +16,15 @@ Golang-pangu is based on [Gin](https://github.com/gin-gonic/gin), [jwt-go](https
 
 * ### sign_up
 
-  Post `http://localhost:3002/sign_up` 
+  Post `http://localhost:3002/users/sign_up` 
 
   params: email, password, password_confirm
 
 * ### sign_in
 
-  Post `http://localhost:3002/sign_in` 
+  Post `http://localhost:3002/users/sign_in` 
 
-  params: email, password, device_type
+  params: email, password
 
   when sign_in success, you will get a Authorization header from response
 
@@ -36,6 +36,6 @@ Golang-pangu is based on [Gin](https://github.com/gin-gonic/gin), [jwt-go](https
 
 * ### change_password
 
-  Post `http://localhost:3002/change_password` 
+  Post `http://localhost:3002/users/change_password` 
 
   params: origin_password, password, password_confirm

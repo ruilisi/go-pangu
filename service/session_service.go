@@ -56,7 +56,7 @@ func SignInHandler(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"status": "accout or password error"})
 		return
 	}
-	payload := jwt.GenPayload(signIn.Device, "user", user.ID.String())
+	payload := jwt.GenPayload("user", user.ID.String())
 	tokenString := jwt.Encoder(payload)
 	jwt.OnJwtDispatch(payload)
 
