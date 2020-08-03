@@ -1,7 +1,7 @@
 package service
 
 import (
-	"go-jwt/args"
+	"go-jwt/params"
 	"go-jwt/db"
 	"go-jwt/jwt"
 	"go-jwt/models"
@@ -12,7 +12,7 @@ import (
 )
 
 func SignUpHandler(c *gin.Context) {
-	var signUp args.SignUp
+	var signUp params.SignUp
 	if err := c.ShouldBind(&signUp); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -39,7 +39,7 @@ func SignUpHandler(c *gin.Context) {
 }
 
 func SignInHandler(c *gin.Context) {
-	var signIn args.SignIn
+	var signIn params.SignIn
 	if err := c.ShouldBind(&signIn); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

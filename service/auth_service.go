@@ -2,7 +2,12 @@ package service
 
 import (
 	"fmt"
+<<<<<<< Updated upstream
 	"go-jwt/args"
+=======
+	"go-jwt/params"
+	"go-jwt/conf"
+>>>>>>> Stashed changes
 	"go-jwt/db"
 	"go-jwt/jwt"
 	"go-jwt/models"
@@ -22,7 +27,7 @@ func ChangePasswordHandler(c *gin.Context) {
 		return
 	}
 
-	var change args.ChangePassword
+	var change params.ChangePassword
 	if err := c.ShouldBind(&change); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
