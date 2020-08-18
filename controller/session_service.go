@@ -18,7 +18,7 @@ func SignUpHandler(c *gin.Context) {
 		return
 	}
 
-	user := db.FindUserByEmail(signUp.Email)
+	user := models.FindUserByEmail(signUp.Email)
 	if user.Email != "" {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "accout exists"})
 		return
@@ -46,7 +46,7 @@ func SignInHandler(c *gin.Context) {
 	}
 
 	password := signIn.Password
-	user := db.FindUserByEmail(signIn.Email)
+	user := models.FindUserByEmail(signIn.Email)
 	if user.Email == "" {
 		c.JSON(http.StatusUnauthorized, gin.H{"status": "accout not found"})
 		return

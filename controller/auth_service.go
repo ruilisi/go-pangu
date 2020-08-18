@@ -5,6 +5,8 @@ import (
 	"go-pangu/db"
 	"go-pangu/jwt"
 	"go-pangu/models"
+
+	//"go-pangu/models/user"
 	"go-pangu/params"
 	"net/http"
 
@@ -17,7 +19,7 @@ func CurrentUser(c *gin.Context) *models.User {
 	if !ok {
 		return &models.User{}
 	}
-	return db.FindUserById(fmt.Sprintf("%s", sub))
+	return models.FindUserById(fmt.Sprintf("%s", sub))
 }
 
 func AuthPingHandler(c *gin.Context) {
@@ -40,7 +42,7 @@ func ChangePasswordHandler(c *gin.Context) {
 		return
 	}
 
-	user := db.FindUserById(fmt.Sprintf("%v", sub))
+	user := models.FindUserById(fmt.Sprintf("%v", sub))
 	err := bcrypt.CompareHashAndPassword([]byte(user.EncryptedPassword), []byte(change.OriginPassword))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "origin password error"})

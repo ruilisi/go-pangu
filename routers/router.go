@@ -4,7 +4,8 @@ import (
 	"fmt"
 
 	"go-pangu/conf"
-	"go-pangu/service"
+	service "go-pangu/controller"
+	"go-pangu/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,7 +15,7 @@ func InitRouter() {
 
 	router.GET("/ping", service.PingHandler)
 	authorized := router.Group("/")
-	authorized.Use(Auth())
+	authorized.Use(middleware.Auth())
 	{
 		authorized.GET("/auth_ping", service.AuthPingHandler)
 	}
@@ -24,7 +25,7 @@ func InitRouter() {
 		users.POST("/sign_up", service.SignUpHandler)
 		users.POST("/sign_in", service.SignInHandler)
 	}
-	users.Use(Auth())
+	users.Use(middleware.Auth())
 	{
 		users.POST("/change_password", service.ChangePasswordHandler)
 	}

@@ -1,4 +1,4 @@
-package routers
+package middleware
 
 import (
 	"go-pangu/jwt"

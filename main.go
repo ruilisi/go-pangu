@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go-pangu/args"
 	"go-pangu/db"
+	"go-pangu/models"
 	"go-pangu/redis"
 	"go-pangu/routers"
 )
@@ -20,7 +21,7 @@ func main() {
 	case "migrate":
 		db.Migrate()
 	case "seed":
-		db.Seed()
+		models.Seed()
 	default:
 		fmt.Println("server starting...")
 		db.Open()
