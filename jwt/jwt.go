@@ -10,7 +10,6 @@ import (
 	_redis "go-pangu/redis"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/go-redis/redis/v8"
 	"github.com/google/uuid"
 )
 
@@ -39,14 +38,11 @@ func JwtRevoked(payload Payload) bool {
 
 func RevokeJwt(payload Payload) {
 	expiration := payload.ExpiresAt - payload.IssuedAt
-	_redis.Set(fmt.Sprintf("user_blacklist:%s:%s", payload.Subject, payload.Id), payload.Id, time.Duration(expiration)*time.Second)
+	_redis.SetEx(fmt.Sprintf("user_blacklist:%s:%s", payload.Subject, payload.Id), payload.Id, time.Duration(expiration)*time.Second)
 }
 
 func RevokeLastJwt(payload Payload) {
-	lastJwt, err := _redis.Get(fmt.Sprintf("user_jwt:%s", payload.Subject))
-	if err != nil && err != redis.Nil {
-		fmt.Println("redis err:", err)
-	}
+	lastJwt := _redis.Get(fmt.Sprintf("user_jwt:%s", payload.Subject))
 	if lastJwt != "" {
 		arr := strings.Split(lastJwt, ":")
 		jti, expStr := arr[0], arr[len(arr)-1]
@@ -63,7 +59,7 @@ func RevokeLastJwt(payload Payload) {
 
 func OnJwtDispatch(payload Payload) {
 	RevokeLastJwt(payload)
-	_redis.Set(fmt.Sprintf("user_jwt:%s", payload.Subject), fmt.Sprintf("%s:%d", payload.Id, payload.ExpiresAt), time.Unix(payload.ExpiresAt, 0).Sub(time.Now()))
+	_redis.SetEx(fmt.Sprintf("user_jwt:%s", payload.Subject), fmt.Sprintf("%s:%d", payload.Id, payload.ExpiresAt), time.Unix(payload.ExpiresAt, 0).Sub(time.Now()))
 }
 
 func Encoder(payload Payload) string {
