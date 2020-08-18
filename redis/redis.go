@@ -2,7 +2,7 @@ package redis
 
 import (
 	"context"
-	"go-jwt/conf"
+	"go-pangu/conf"
 	"net/url"
 	"strconv"
 	"time"

@@ -1,7 +1,7 @@
 package routers
 
 import (
-	"go-jwt/jwt"
+	"go-pangu/jwt"
 	"net/http"
 	"strings"
 

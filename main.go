@@ -2,11 +2,10 @@ package main
 
 import (
 	"fmt"
-	"go-jwt/args"
-	_ "go-jwt/conf"
-	"go-jwt/db"
-	"go-jwt/redis"
-	"go-jwt/routers"
+	"go-pangu/args"
+	"go-pangu/db"
+	"go-pangu/redis"
+	"go-pangu/routers"
 )
 
 func init() {

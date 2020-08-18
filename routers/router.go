@@ -3,8 +3,8 @@ package routers
 import (
 	"fmt"
 
-	"go-jwt/conf"
-	"go-jwt/service"
+	"go-pangu/conf"
+	"go-pangu/service"
 
 	"github.com/gin-gonic/gin"
 )

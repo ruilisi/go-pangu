@@ -2,11 +2,9 @@ package db
 
 import (
 	"fmt"
-	"go-jwt/conf"
-	"go-jwt/models"
+	"go-pangu/conf"
 	"net/url"
 
-	"golang.org/x/crypto/bcrypt"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -47,20 +45,9 @@ func Create() {
 	}
 }
 
-func Seed() {
+func Migrate(models ...interface{}) {
 	Open()
-	email := "test@123.com"
-	user := FindUserByEmail(email)
-	if user.Email == "" {
-		hash, _ := bcrypt.GenerateFromPassword([]byte("test123"), bcrypt.DefaultCost)
-		user = &models.User{Email: email, EncryptedPassword: string(hash)}
-		DB.Create(user)
-	}
-}
-
-func Migrate() {
-	Open()
-	DB.AutoMigrate(&models.User{})
+	DB.AutoMigrate(models...)
 }
 
 func Drop() {
@@ -81,16 +68,4 @@ func Drop() {
 func Close() {
 	sqlDB, _ := DB.DB()
 	sqlDB.Close()
-}
-
-func FindUserByEmail(email string) *models.User {
-	var user models.User
-	DB.Where("email = ?", email).First(&user)
-	return &user
-}
-
-func FindUserById(id string) *models.User {
-	var user models.User
-	DB.Where("id = ?", id).First(&user)
-	return &user
 }

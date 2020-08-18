@@ -1,10 +1,10 @@
 package service
 
 import (
-	"go-jwt/db"
-	"go-jwt/jwt"
-	"go-jwt/models"
-	"go-jwt/params"
+	"go-pangu/db"
+	"go-pangu/jwt"
+	"go-pangu/models"
+	"go-pangu/params"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

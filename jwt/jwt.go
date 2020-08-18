@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"go-jwt/conf"
-	_redis "go-jwt/redis"
+	"go-pangu/conf"
+	_redis "go-pangu/redis"
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/go-redis/redis/v8"
