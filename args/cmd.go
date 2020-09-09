@@ -6,7 +6,9 @@ import (
 
 // CmdArgs ...
 type CmdArgs struct {
-	DB string
+	DB      string
+	Amqp    int
+	GIN_ENV string
 }
 
 var Cmd CmdArgs

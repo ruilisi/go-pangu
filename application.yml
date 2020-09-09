@@ -2,4 +2,6 @@ DEVISE_JWT_SECRET_KEY: RANDOM_SECRET
 HTTP_PORT: 3000
 BASE_DATABASE_URL: postgres://postgres:postgres@localhost:5432
 DATABASE_URL: postgres://postgres:postgres@localhost:5432/go_pangu_test?sslmode=disable
-REDIS_URL: redis://localhost:6379/0
+DATABASE_TESTURL: postgres://postgres:postgres@localhost:5432/gopangu_test?sslmode=disable
+REDIS_URL: redis://localhost:6379/7
+WORKERS: CollectIpWorker,QcloudSmsWorker

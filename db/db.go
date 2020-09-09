@@ -15,9 +15,12 @@ type PGExtension struct {
 	Extname string
 }
 
-func Open() {
+func Open(env string) {
 	var err error
-	if DB, err = gorm.Open(postgres.Open(conf.GetEnv("DATABASE_URL")), &gorm.Config{}); err != nil {
+	var url string
+	url = conf.GetEnv("DATABASE_URL")
+
+	if DB, err = gorm.Open(postgres.Open(url), &gorm.Config{}); err != nil {
 		panic(err.Error())
 	}
 }
@@ -34,20 +37,43 @@ func Create() {
 			panic(err)
 		}
 		baseDb.Exec(fmt.Sprintf("CREATE DATABASE %s;", path[1:]))
-		uri.Path = path
+		if conf.GetEnv("GIN_ENV") != "production" {
+			baseDb.Exec(fmt.Sprintf("CREATE DATABASE %s;", "gopangu_test"))
+		}
 	}
+}
 
-	Open()
+func Migrate(env string, models ...interface{}) {
+	Open(env)
 	var pgExtension PGExtension
 	DB.Table("pg_extension").Where("extname = ?", "pgcrypto").Find(&pgExtension)
 	if pgExtension.Extname != "pgcrypto" {
 		DB.Exec("CREATE EXTENSION pgcrypto")
 	}
+	if env == "test" {
+		DB.Exec(`CREATE OR REPLACE FUNCTION truncate_tables(username IN VARCHAR) RETURNS void AS $$
+DECLARE
+		statements CURSOR FOR 
+				SELECT tablename FROM pg_tables
+				WHERE tableowner = username AND schemaname = 'public';
+BEGIN 
+		FOR stmt IN statements LOOP 
+				EXECUTE 'TRUNCATE TABLE ' || quote_ident(stmt.tablename) || ' CASCADE;';  
+		END LOOP; 
+END; 
+$$ LANGUAGE plpgsql;`)
+	}
+	DB.AutoMigrate(models...)
 }
 
-func Migrate(models ...interface{}) {
-	Open()
-	DB.AutoMigrate(models...)
+//func CleanTablesData() {
+//Open("test")
+//DB.Exec(`SELECT truncate_tables('postgres');`)
+//}
+
+func DropTables(env string) {
+	Open(env)
+	DB.Exec("DROP SCHEMA public CASCADE;")
 }
 
 func Drop() {
@@ -62,6 +88,9 @@ func Drop() {
 			panic(err)
 		}
 		baseDb.Exec(fmt.Sprintf("DROP DATABASE %s;", path[1:]))
+		if conf.GetEnv("GIN_ENV") != "production" {
+			baseDb.Exec(fmt.Sprintf("DROP DATABASE %s;", "gopangu_test"))
+		}
 	}
 }
 

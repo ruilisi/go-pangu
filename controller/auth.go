@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"go-pangu/conf"
 	"go-pangu/db"
 	"go-pangu/jwt"
 	"go-pangu/models"
@@ -15,11 +16,9 @@ import (
 )
 
 func CurrentUser(c *gin.Context) *models.User {
-	sub, ok := c.Get("sub")
-	if !ok {
-		return &models.User{}
-	}
-	return models.FindUserById(fmt.Sprintf("%s", sub))
+	sub, _ := c.Get("sub")
+	user, _ := models.FindUserByColum("id", sub)
+	return user
 }
 
 func AuthPingHandler(c *gin.Context) {
@@ -27,12 +26,11 @@ func AuthPingHandler(c *gin.Context) {
 }
 
 func ChangePasswordHandler(c *gin.Context) {
-	sub, ok := c.Get("sub")
-	if !ok {
-		return
-	}
-
+	sub, _ := c.Get("sub")
+	scp, _ := c.Get("scp")
 	var change params.ChangePassword
+	var oldEncryptedPassword string
+	var user *models.User
 	if err := c.ShouldBind(&change); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -42,21 +40,33 @@ func ChangePasswordHandler(c *gin.Context) {
 		return
 	}
 
-	user := models.FindUserById(fmt.Sprintf("%v", sub))
-	err := bcrypt.CompareHashAndPassword([]byte(user.EncryptedPassword), []byte(change.OriginPassword))
+	switch scp {
+	case "user":
+		user, _ = models.FindUserByColum("id", sub)
+		oldEncryptedPassword = user.EncryptedPassword
+
+	}
+	err := bcrypt.CompareHashAndPassword([]byte(oldEncryptedPassword), []byte(change.OriginPassword))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"status": "origin password error"})
 		return
 	}
+
 	hash, err := bcrypt.GenerateFromPassword([]byte(change.Password), bcrypt.DefaultCost)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
 	encryptedPassword := string(hash)
-	db.DB.Model(&user).Updates(models.User{EncryptedPassword: encryptedPassword})
-	payload := jwt.GenPayload("user", user.ID.String())
-	jwt.RevokeLastJwt(payload)
+	var payload jwt.Payload
+	switch scp {
+	case "user":
+		db.DB.Model(&user).Updates(models.User{EncryptedPassword: encryptedPassword})
+		payload = jwt.GenPayload("", "user", user.ID.String())
+		for _, device := range conf.DEVICE_TYPES {
+			payload.Device = device
+			jwt.RevokeLastJwt(payload)
+		}
+	}
 	c.JSON(http.StatusOK, gin.H{"status": "update password success"})
 }

@@ -14,14 +14,16 @@ import (
 )
 
 type Payload struct {
-	Scp string `json:"scp,omitempty"`
+	Device string `json:"device,omitempty"`
+	Scp    string `json:"scp,omitempty"`
 	jwt.StandardClaims
 }
 
-func GenPayload(scp, sub string) Payload {
+func GenPayload(device, scp, sub string) Payload {
 	now := time.Now()
 	return Payload{
-		Scp: scp,
+		Device: device,
+		Scp:    scp,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: now.Add(1 * time.Hour).Unix(),
 			Id:        uuid.New().String(),
