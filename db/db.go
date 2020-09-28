@@ -38,7 +38,7 @@ func Create() {
 		}
 		baseDb.Exec(fmt.Sprintf("CREATE DATABASE %s;", path[1:]))
 		if conf.GetEnv("GIN_ENV") != "production" {
-			baseDb.Exec(fmt.Sprintf("CREATE DATABASE %s;", "gopangu_test"))
+			baseDb.Exec(fmt.Sprintf("CREATE DATABASE %s;", "go_pangu_test"))
 		}
 	}
 }
@@ -64,6 +64,7 @@ END;
 $$ LANGUAGE plpgsql;`)
 	}
 	DB.AutoMigrate(models...)
+	defer Close()
 }
 
 //func CleanTablesData() {
@@ -74,6 +75,7 @@ $$ LANGUAGE plpgsql;`)
 func DropTables(env string) {
 	Open(env)
 	DB.Exec("DROP SCHEMA public CASCADE;")
+	defer Close()
 }
 
 func Drop() {
@@ -89,7 +91,7 @@ func Drop() {
 		}
 		baseDb.Exec(fmt.Sprintf("DROP DATABASE %s;", path[1:]))
 		if conf.GetEnv("GIN_ENV") != "production" {
-			baseDb.Exec(fmt.Sprintf("DROP DATABASE %s;", "gopangu_test"))
+			baseDb.Exec(fmt.Sprintf("DROP DATABASE %s;", "go_pangu_test"))
 		}
 	}
 }

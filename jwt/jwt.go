@@ -11,6 +11,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 	"github.com/google/uuid"
+	"github.com/spf13/viper"
 )
 
 type Payload struct {
@@ -73,25 +74,24 @@ func Encoder(payload Payload) string {
 	return tokenString
 }
 
-func Decoder(tokenString string) (string, error) {
+func Decoder(tokenString string) (string, string, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &Payload{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(conf.GetEnv("DEVISE_JWT_SECRET_KEY")), nil
+		return []byte(viper.Get("DEVISE_JWT_SECRET_KEY").(string)), nil
 	})
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	if payload, ok := token.Claims.(*Payload); ok && token.Valid {
 		sub := (*payload).Subject
-		if sub != "" && !JwtRevoked(*payload) {
-			return sub, nil
-		} else {
-			return "", fmt.Errorf("token is expired")
+		scp := (*payload).Scp
+		if sub != "" && !JwtRevoked(*payload) && scp != "" {
+			return sub, scp, nil
 		}
 	}
 
-	return "", fmt.Errorf("invalid token")
+	return "", "", fmt.Errorf("invalid token")
 }

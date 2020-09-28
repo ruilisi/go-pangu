@@ -1,12 +1,10 @@
 package routers
 
 import (
-	"context"
 	"fmt"
-	"log"
-	"net/http"
 	"os"
-	"time"
+	"os/signal"
+	"syscall"
 
 	"go-pangu/conf"
 	service "go-pangu/controller"
@@ -16,25 +14,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func InitRouter(ctx context.Context, cancel context.CancelFunc, osSignal chan os.Signal) {
+func InitRouter(sig ...os.Signal) {
 	router := SetupRouter()
-	srv := &http.Server{
-		Addr:    fmt.Sprintf(":%v", conf.GetEnv("HTTP_PORT")),
-		Handler: router,
+
+	if len(sig) == 0 {
+		sig = []os.Signal{syscall.SIGINT, syscall.SIGTERM}
 	}
+
+	signalChan := make(chan os.Signal, 1)
+
 	go func() {
-		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen:%s\n", err)
-		}
+		router.Run(fmt.Sprintf(":%v", conf.GetEnv("HTTP_PORT")))
 	}()
-	fmt.Printf("Listening and serving HTTP on :%s\n", conf.GetEnv("HTTP_PORT"))
-	<-osSignal
-	cancel()
-	if err := srv.Shutdown(ctx); err != nil {
-		fmt.Println("Serve forced to shutdown:", err)
-	}
-	time.Sleep(1 * time.Second)
-	fmt.Println("Server exiting")
+	signal.Notify(signalChan, sig...)
 }
 
 func SetupRouter() *gin.Engine {
@@ -49,7 +41,7 @@ func SetupRouter() *gin.Engine {
 	router.GET("/ping", service.PingHandler)
 	//	router.GET("")
 	authorized := router.Group("/")
-	authorized.Use(middleware.Auth())
+	authorized.Use(middleware.Auth("user"))
 	{
 		authorized.GET("/auth_ping", service.AuthPingHandler)
 	}
@@ -58,9 +50,9 @@ func SetupRouter() *gin.Engine {
 		users.POST("/sign_up", service.SignUpHandler)
 		users.POST("/sign_in", service.SignInHandler)
 	}
-	users.Use(middleware.Auth())
+	users.Use(middleware.Auth("user"))
 	{
-		//users.POST("/change_password", service.ChangePasswordHandler)
+		users.POST("/change_password", service.ChangePasswordHandler)
 	}
 	return router
 

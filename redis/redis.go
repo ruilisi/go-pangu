@@ -86,6 +86,13 @@ func Del(key string) {
 	}
 }
 
+func Expire(key string, dur time.Duration) {
+	_, err := getRDB().Expire(ctx, key, dur).Result()
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
 func Exists(key string) bool {
 	ok, err := getRDB().Exists(ctx, key).Result()
 	if err != nil {
