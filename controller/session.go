@@ -30,7 +30,7 @@ func SignUpHandler(c *gin.Context) {
 		notFound = false
 	}
 	if !notFound {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "aacount exists"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "account exists"})
 		return
 	}
 

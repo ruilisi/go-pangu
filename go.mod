@@ -11,9 +11,12 @@ require (
 	github.com/go-redis/redis/v8 v8.0.0-beta.7
 	github.com/go-resty/resty/v2 v2.3.0
 	github.com/google/uuid v1.1.1
+	github.com/imroc/req v0.3.0
 	github.com/jinzhu/gorm v1.9.15
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/judwhite/go-svc v1.1.2
+	github.com/onsi/ginkgo v1.10.3
+	github.com/onsi/gomega v1.7.1
 	github.com/spf13/viper v1.7.0
 	github.com/thoas/go-funk v0.7.0
 	golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899

@@ -26,6 +26,17 @@ const (
 	NOT_FOUND = 1
 )
 
+// func Seed() {
+// db.Open("test")
+// email := "test@123.com"
+// _, result := FindManagerByEmail(email)
+// if result.NotFound() {
+// hash, _ := bcrypt.GenerateFromPassword([]byte("123aaa"), bcrypt.DefaultCost)
+// manager := &Manager{Email: email, EncryptedPassword: string(hash)}
+// db.DB.Create(manager)
+// }
+// }
+
 func Result(err error) SearchResult {
 	var status int
 	if err != nil {

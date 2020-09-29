@@ -55,5 +55,4 @@ func SetupRouter() *gin.Engine {
 		users.POST("/change_password", service.ChangePasswordHandler)
 	}
 	return router
-
 }

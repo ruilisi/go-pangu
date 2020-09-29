@@ -19,7 +19,9 @@ func Open(env string) {
 	var err error
 	var url string
 	url = conf.GetEnv("DATABASE_URL")
-
+	if env == "test" {
+		url = conf.GetEnv("DATABASE_TESTURL")
+	}
 	if DB, err = gorm.Open(postgres.Open(url), &gorm.Config{}); err != nil {
 		panic(err.Error())
 	}
@@ -64,13 +66,12 @@ END;
 $$ LANGUAGE plpgsql;`)
 	}
 	DB.AutoMigrate(models...)
-	defer Close()
 }
 
-//func CleanTablesData() {
-//Open("test")
-//DB.Exec(`SELECT truncate_tables('postgres');`)
-//}
+func CleanTablesData() {
+	Open("test")
+	DB.Exec(`SELECT truncate_tables('postgres');`)
+}
 
 func DropTables(env string) {
 	Open(env)
