@@ -1,5 +1,5 @@
 ## redis
-[中文文档](https://github.com/ruilisi/go-pangu/blob/master/redis/READMECN.md)
+[中文文档](https://github.com/ruilisi/go-pangu/blob/master/redis/READMECN.md)<br>
 connection and operations of redis, whose name is equivalent to the command in redis
 - Get
 - Set

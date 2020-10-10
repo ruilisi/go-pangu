@@ -36,9 +36,6 @@ Golang-pangu基于以下的工具
 │   └── session.go
 ├── db  
 │   └── db.go
-├── dist
-│   ├── go-pangu-amd64-debug-linux
-│   └── go-pangu-amd64-release-linux
 ├── Dockerfile
 ├── go.mod
 ├── go.sum
@@ -150,10 +147,10 @@ Golang-pangu基于以下的工具
         <td align="center"><a href="https://github.com/ExcitingFrog"><img src="https://avatars2.githubusercontent.com/u/25655802?s=460&u=23017079e78e3c3bfa57a14bc369607b1b23c470&v=4" width="100px;" alt="ExcitingFrog"/><br /><sub><b>ExcitingFrog</b></sub></a><br /><a href="https://github.com/ruilisi/golang-pangu/commits?author=ExcitingFrog" title="Code">💻</a> <a href="https://github.com/ruilisi/golang-pangu/commits?author=ExcitingFrog" title="Documentation">📖</a></td>
         <td align="center"><a href="https://github.com/Leo7991"><img src="https://avatars1.githubusercontent.com/u/67139714?s=460&u=278212a0d4d8ca824219adcd932dc85d2fd5ae24&v=4" width="100px;" alt="Leo7991"/><br /><sub><b>Leo7991</b></sub></a><br /><a href="https://github.com/ruilisi/golang-pangu/commits?author=Leo7991" title="Code">💻</a> <a href="https://github.com/ruilisi/golang-pangu/commits?author=Leo7991" title="Documentation">📖</a></td>
         <td align="center"><a href="https://github.com/Daxigua443"><img src="https://avatars1.githubusercontent.com/u/62984061?s=460&u=375eab6d59b2087058c1a30210f8646281971ff7&v=4" width="100px;" alt="Daxigua443"/><br /><sub><b>Daxigua443</b></sub></a><br /><a href="https://github.com/ruilisi/golang-pangu/commits?author=Daxigua443" title="Code">💻</a> <a href="https://github.com/ruilisi/golang-pangu/commits?author=Daxigua443" title="Documentation">📖</a></td>
+          <td align="center"><a href="https://github.com/Soryu23"><img src="https://avatars0.githubusercontent.com/u/67567977?s=460&u=fea632ad315bcdcfeff4de7ac5e2482b249929ac&v=4" width="100px;" alt="Soryu23"/><br /><sub><b>Soryu23</b></sub></a><br /><a href="https://github.com/ruilisi/golang-pangu/commits?author=Soryu23" title="Code">💻</a> <a href="https://github.com/ruilisi/golang-pangu/commits?author=Soryu23" title="Documentation">📖</a></td>
 
   </tr>
 </table>
-
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 该项目遵循[贡献者](https://github.com/all-contributors/all-contributors)规范。欢迎任何形式的捐助！

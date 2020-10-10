@@ -1,5 +1,6 @@
 ## test
 [中文文档](https://github.com/ruilisi/go-pangu/blob/master/test/READMECN.md)
+
 ### install
 `go get -u github.com/onsi/ginkgo/ginkgo`
 

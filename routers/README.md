@@ -1,5 +1,5 @@
 ## router
-[中文文档](https://github.com/ruilisi/go-pangu/blob/master/routers/READMECN.md)
+[中文文档](https://github.com/ruilisi/go-pangu/blob/master/routers/READMECN.md)<br>
 set port monitor
 ```go
 router.Run(fmt.Sprintf(":%v", conf.GetEnv("HTTP_PORT")))

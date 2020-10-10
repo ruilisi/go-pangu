@@ -1,7 +1,7 @@
 ## params
-[中文文档](https://github.com/ruilisi/go-pangu/blob/master/params/READMECN.md)
-this folder contain struct which used in data shouldbind.
-though the function `Param()` in args folder can get parameters. Struct binding can work better when json data contain many params
+[中文文档](https://github.com/ruilisi/go-pangu/blob/master/params/READMECN.md)<br>
+this folder contain struct which used in data shouldbind.<br>
+though the function `Param()` in args folder can get parameters. Struct binding can work better when json data contain many params<br>
 ```go
 if err := c.ShouldBind(&change); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
