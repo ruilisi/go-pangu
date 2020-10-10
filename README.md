@@ -9,12 +9,12 @@ Golang-pangu is based on following tools
 |name|description|
 |------|--------|
 |[Go](https://github.com/golang/go)|an open source programming language that makes it easy to build simple, reliable, and efficient software.|
-|[Gin](https://github.com/gin-gonic/gin)|web struct based on Go,Flexible middleware，strong data bind and high performance.|
+|[Gin](https://github.com/gin-gonic/gin)|web struct based on Go, flexible middleware，strong data binding and outstanding performance.|
 |[Gorm](https://github.com/go-gorm/gorm)|The fantastic ORM library for Golang aims to be developer friendly.|
 |[Ginkgo](https://github.com/onsi/ginkgo)|Ginkgo builds on Go's testing package, allowing expressive Behavior-Driven Development ("BDD") style tests.|
-|[JWT](https://jwt.io/)|JSON Web Tokens.an open, industry standard RFC 7519 method for representing claims securely between two parties.|
-|[Postgres](https://www.postgresql.org/)|The World's Most Advanced Open Source Relational Database|
-|[Redis](https://redis.io/)|an open source (BSD licensed), in-memory data structure store, used as a database, cache and message broker.|
+|[JWT](https://jwt.io/)|JSON Web Tokens. An open, industry standard RFC 7519 method for representing claims securely between two parties.|
+|[Postgres](https://www.postgresql.org/)|The world's most advanced open source relational database|
+|[Redis](https://redis.io/)|An open source (BSD licensed), in-memory data structure store, used as a database, cache and message broker.|
 |[Docker](https://www.docker.com/)|Docker is a tool designed to make it easier to create, deploy, and run applications by using containers.|
 
 ## Struct
@@ -67,16 +67,16 @@ Golang-pangu is based on following tools
 |file|function|
 |------|--------|
 |application.yml|config file|
-|[args](https://github.com/ruilisi/go-pangu/tree/master/args)|include functions which can get params from request url|
-|[conf](https://github.com/ruilisi/go-pangu/tree/master/conf)|include functions which can get config file content|
+|[args](https://github.com/ruilisi/go-pangu/tree/master/args)|functions which can fetch params from request url|
+|[conf](https://github.com/ruilisi/go-pangu/tree/master/conf)|functions which can get configurations|
 |[controller](https://github.com/ruilisi/go-pangu/tree/master/controller)|handlers|
-|[db](https://github.com/ruilisi/go-pangu/tree/master/db)|database operate|
-|[jwt](https://github.com/ruilisi/go-pangu/tree/master/jwt)|include create and verify jwt fuction|
-|main.go|main function, with db param|
+|[db](https://github.com/ruilisi/go-pangu/tree/master/db)|database operations like migrating database|
+|[jwt](https://github.com/ruilisi/go-pangu/tree/master/jwt)|fuctions to create and check jwt|
+|main.go|main function.Call function with "--db" parameter, "create" to create database, "migrate" to migrate tables, "dorp" to delete database|
 |[middleware](https://github.com/ruilisi/go-pangu/tree/master/middleware)|middleware|
-|[models](https://github.com/ruilisi/go-pangu/tree/master/models)|base models |
-|[params](https://github.com/ruilisi/go-pangu/tree/master/params)|struct used in data bind|
-|[redis](https://github.com/ruilisi/go-pangu/tree/master/redis)|redis operate functions|
+|[models](https://github.com/ruilisi/go-pangu/tree/master/models)|base models and basic database operations|
+|[params](https://github.com/ruilisi/go-pangu/tree/master/params)|struct used in data binding|
+|[redis](https://github.com/ruilisi/go-pangu/tree/master/redis)|redis connection and operations|
 |[router](https://github.com/ruilisi/go-pangu/tree/master/routers)|router|
 |[test](https://github.com/ruilisi/go-pangu/tree/master/test)|test|
 
@@ -96,25 +96,29 @@ Golang-pangu is based on following tools
 
   params: email, password, password_confirm
 
+  Register user
+
 * ### sign_in
 
   Post `http://localhost:3002/users/sign_in`
 
   params: email, password
 
-  when sign_in success, you will get a Authorization header from response
+  You will get a header with authorization parameter from response after logging in successfully
 
 * ### auth_ping
 
   Get `http://localhost:3002/auth_ping`
 
-  params: should add a valid Authorization header to request this api
+  Should add a valid user token to request this api
 
 * ### change_password
 
   Post `http://localhost:3002/users/change_password`
 
   params: origin_password, password, password_confirm
+
+  Modify user's password, which needs authorization
 
 
 ## other public library
@@ -124,7 +128,7 @@ Golang-pangu is based on following tools
   |product|description|
   |----|-----|
   |[eSheep](https://esheep.io/)|Network booster which helps global users access better entertainment content from China.|
-  |[cs-server](https://excitingfrog.gitbook.io/im-api/)|agent server（unfinished）|
+  |[cs-server](https://excitingfrog.gitbook.io/im-api/)|agent server（Comming soon）|
 
 ## License
 Code and documentation copyright 2020 the [Golang-pangu Authors](https://github.com/ruilisi/go-pangu/graphs/contributors) and [ruilisi Network](https://ruilisi.co/) Code released under the [MIT License](https://github.com/ruilisi/go-pangu/blob/master/LICENSE).
