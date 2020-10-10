@@ -14,16 +14,17 @@ type User struct {
 	EncryptedPassword string
 }
 
-func FindUserByEmail(email string) *User {
+func FindUserByEmail(email string) (*User, SearchResult) {
 	var user User
-	db.DB.Where("email = ?", email).First(&user)
-	return &user
+	result := Result(db.DB.Where("email = ?", email).First(&user).Error)
+	return &user, result
+
 }
 
-func FindUserById(id string) *User {
+func FindUserByID(id string) (*User, SearchResult) {
 	var user User
-	db.DB.Where("id = ?", id).First(&user)
-	return &user
+	result := Result(db.DB.Where("id = ?", id).First(&user).Error)
+	return &user, result
 }
 
 func FindUserByColum(colum string, value interface{}) (*User, bool) {
