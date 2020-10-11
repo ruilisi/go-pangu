@@ -16,29 +16,6 @@ import (
 	"github.com/judwhite/go-svc/svc"
 )
 
-// func init() {
-// redis.ConnectRedis()
-// }
-
-// func main() {
-// args.ParseCmd()
-// switch args.Cmd.DB {
-// case "create":
-// db.Create()
-// case "migrate":
-// db.Migrate(args.Cmd.GIN_ENV, &models.User{})
-// case "seed":
-// default:
-// ctx, cancel := context.WithCancel(context.Background())
-// fmt.Println("111111")
-// osSignal := make(chan os.Signal)
-// signal.Notify(osSignal, os.Interrupt, os.Kill, syscall.SIGTERM, syscall.SIGHUP)
-// fmt.Println("server starting...")
-// db.Open("")
-// defer db.Close()
-// routers.InitRouter(ctx, cancel, osSignal)
-// }
-// }
 type program struct {
 	wg   sync.WaitGroup
 	quit chan struct{}
