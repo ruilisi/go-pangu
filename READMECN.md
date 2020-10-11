@@ -120,6 +120,7 @@ Golang-pangu基于以下的工具
 |----|-----|
 |[eSheep](https://esheep.io/)|电子绵羊eSheep是一款网络加速器，它可以帮助身在海外的您极速连接中国的视频音乐网站。|
 |[cs-server](https://excitingfrog.gitbook.io/im-api/)|客服服务（未来上线）|
+|soda-server|未来上线|
 
 ## 执照
 

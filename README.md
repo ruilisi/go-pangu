@@ -125,7 +125,8 @@ Golang-pangu is based on following tools
   |product|description|
   |----|-----|
   |[eSheep](https://esheep.io/)|Network booster which helps global users access better entertainment content from China.|
-  |[cs-server](https://excitingfrog.gitbook.io/im-api/)|agent server（Comming soon）|
+  |[cs-server](https://excitingfrog.gitbook.io/im-api/)|agent server(Comming soon!)|
+  |soda-server|Comming soon!|
 
 ## License
 Code and documentation copyright 2020 the [Golang-pangu Authors](https://github.com/ruilisi/go-pangu/graphs/contributors) and [ruilisi Network](https://ruilisi.co/) Code released under the [MIT License](https://github.com/ruilisi/go-pangu/blob/master/LICENSE).

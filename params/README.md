@@ -16,4 +16,4 @@ type SignIn struct {
 	Password string `form:"password" json:"password" xml:"password" binding:"required"`
 }
 ```
-json,form,xml settings can bind data in different methods
+json,form,xml settings in struct can bind data in different methods
