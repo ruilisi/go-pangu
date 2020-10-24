@@ -17,6 +17,7 @@ require (
 	github.com/judwhite/go-svc v1.1.2
 	github.com/onsi/ginkgo v1.10.3
 	github.com/onsi/gomega v1.7.1
+	github.com/qinxin0720/QcloudSms-go v1.0.0
 	github.com/spf13/viper v1.7.0
 	github.com/thoas/go-funk v0.7.0
 	golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899

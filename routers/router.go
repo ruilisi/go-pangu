@@ -39,6 +39,7 @@ func SetupRouter() *gin.Engine {
 	router.Use(cors.New(config))
 
 	router.GET("/ping", service.PingHandler)
+	router.POST("/sms", service.SMSHandler)
 	//	router.GET("")
 	authorized := router.Group("/")
 	authorized.Use(middleware.Auth("user"))
