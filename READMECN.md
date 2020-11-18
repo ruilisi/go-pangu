@@ -1,6 +1,6 @@
 # Golang-pangu
 
-
+[简明教程](https://github.com/ruilisi/go-pangu/blob/master/document/%E7%AE%80%E6%98%8E%E6%95%99%E7%A8%8B.md)<br>
 [English document](https://github.com/ruilisi/go-pangu/blob/master/README.md)<br>
 Golang-pangu是一个用Go语言开发的一站式服务开发的技术解决方案，它整合了 JWT(JSON Web Tokens), Postgres, Redis, Docker, Gin, Ginkgo, Gorm等多项业界尖端技术，它是后端项目开发的起点，可作为开发者强有力的生产工具。
 
