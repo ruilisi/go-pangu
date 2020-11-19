@@ -22,15 +22,19 @@ func CurrentUser(c *gin.Context) *models.User {
 }
 
 func AuthPingHandler(c *gin.Context) {
+	//需要验证token的ping，需要先登录才能使用
 	c.String(http.StatusOK, fmt.Sprintf("pong"))
 }
 
 func ChangePasswordHandler(c *gin.Context) {
+	//修改密码的handler
 	sub, _ := c.Get("sub")
 	scp, _ := c.Get("scp")
 	var change params.ChangePassword
 	var oldEncryptedPassword string
 	var user *models.User
+
+	//绑定参数 这里用的是结构体绑定
 	if err := c.ShouldBind(&change); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -40,6 +44,8 @@ func ChangePasswordHandler(c *gin.Context) {
 		return
 	}
 
+	//通过scp判断不同类型用户 这里可以自行添加不同类型用户情况
+	//这里查找旧密码，与传入的旧密码加密后的字符串比较是否一致
 	switch scp {
 	case "user":
 		user, _ = models.FindUserByColum("id", sub)
@@ -52,11 +58,14 @@ func ChangePasswordHandler(c *gin.Context) {
 		return
 	}
 
+	//将新密码加密后保存
 	hash, err := bcrypt.GenerateFromPassword([]byte(change.Password), bcrypt.DefaultCost)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	//更新数据库 生成新token  注销老token
 	encryptedPassword := string(hash)
 	var payload jwt.Payload
 	switch scp {
@@ -68,5 +77,7 @@ func ChangePasswordHandler(c *gin.Context) {
 			jwt.RevokeLastJwt(payload)
 		}
 	}
+
+	//返回结果
 	c.JSON(http.StatusOK, gin.H{"status": "update password success"})
 }

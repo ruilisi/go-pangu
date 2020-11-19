@@ -13,6 +13,7 @@ import (
 	"github.com/qinxin0720/QcloudSms-go/QcloudSms"
 )
 
+//随机数组，生成随机数需要选一个组，随机的字符在其中选择
 var (
 	LetterRunes    = []rune("1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	SMSletterRunes = []rune("0123456789")
@@ -44,7 +45,7 @@ func RandStringRunes(n int, letterRunes []rune) string {
 }
 
 func SMSFunction(mobile string, message []string, templID int) error {
-	//发送短信
+	//发送短信  使用的是腾讯云短信服务  需要在根目录的配置文件自行配置你的参数
 	var (
 		appID, _ = strconv.Atoi(conf.GetEnv("SMS_APPID"))
 		appKey   = conf.GetEnv("SMS_APPKEY")
@@ -90,7 +91,7 @@ func SMSHandler(c *gin.Context) {
 }
 
 func SMSVerify(code string, mobile string) bool {
-	//验证手机号
+	//验证手机号 在需要验证用户提交的code是否与redis数据库一致时使用
 	smsCode := redis.Get(mobile)
 	if code == string(smsCode) {
 		return true

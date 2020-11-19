@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+//中间件 验证token scp传入用户类型
 func Auth(scp string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		bear := c.Request.Header.Get("Authorization")

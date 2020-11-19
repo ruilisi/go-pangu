@@ -9,12 +9,14 @@ import (
 	"gorm.io/gorm"
 )
 
+//定义一个变量 可以被其他文件夹下package 调用
 var DB *gorm.DB
 
 type PGExtension struct {
 	Extname string
 }
 
+//连接数据库
 func Open(env string) {
 	var err error
 	var url string
@@ -27,6 +29,7 @@ func Open(env string) {
 	}
 }
 
+//创建数据库
 func Create() {
 	dbURL := conf.GetEnv("DATABASE_URL")
 	if uri, err := url.Parse(dbURL); err != nil {
@@ -45,6 +48,7 @@ func Create() {
 	}
 }
 
+//更新表结构
 func Migrate(env string, models ...interface{}) {
 	Open(env)
 	var pgExtension PGExtension
@@ -79,6 +83,7 @@ func DropTables(env string) {
 	defer Close()
 }
 
+//删库跑路
 func Drop() {
 	dbURL := conf.GetEnv("DATABASE_URL")
 	if uri, err := url.Parse(dbURL); err != nil {
@@ -97,6 +102,7 @@ func Drop() {
 	}
 }
 
+//关闭数据库
 func Close() {
 	sqlDB, _ := DB.DB()
 	sqlDB.Close()

@@ -13,6 +13,9 @@ import (
 )
 
 func SignUpHandler(c *gin.Context) {
+	//注册user的handler
+
+	//绑定数据
 	var params map[string]string
 	if err := c.ShouldBindJSON(&params); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

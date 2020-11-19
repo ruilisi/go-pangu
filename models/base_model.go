@@ -8,13 +8,14 @@ import (
 	"gorm.io/gorm"
 )
 
-// gorm.Model 的定义
+// gorm.Model 的定义 带有uuid 和 创建/修改时间
 type Model struct {
 	ID        uuid.UUID `gorm:"type:uuid;primaryKey;default:gen_random_uuid()"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
 
+//搜索结果结构,用来返回错误内容
 type SearchResult struct {
 	Error  error
 	Status int

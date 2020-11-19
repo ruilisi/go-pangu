@@ -14,23 +14,25 @@ import (
 	"github.com/spf13/viper"
 )
 
+//定义payload结构
 type Payload struct {
 	Device string `json:"device,omitempty"`
 	Scp    string `json:"scp,omitempty"`
 	jwt.StandardClaims
 }
 
+//生成payload
 func GenPayload(device, scp, sub string) Payload {
 	now := time.Now()
 	return Payload{
-		Device: device,
-		Scp:    scp,
+		Device: device, //设备类型
+		Scp:    scp,    //用户类型
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: now.Add(1 * time.Hour).Unix(),
+			ExpiresAt: now.Add(1 * time.Hour).Unix(), //设置有效时间
 			Id:        uuid.New().String(),
 			NotBefore: now.Unix(),
 			IssuedAt:  now.Unix(),
-			Subject:   sub,
+			Subject:   sub, //用户id
 		},
 	}
 }
@@ -60,11 +62,13 @@ func RevokeLastJwt(payload Payload) {
 	}
 }
 
+//先注销之前的token  再生成新的
 func OnJwtDispatch(payload Payload) {
 	RevokeLastJwt(payload)
 	_redis.SetEx(fmt.Sprintf("user_jwt:%s", payload.Subject), fmt.Sprintf("%s:%d", payload.Id, payload.ExpiresAt), time.Unix(payload.ExpiresAt, 0).Sub(time.Now()))
 }
 
+//编码
 func Encoder(payload Payload) string {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
 	tokenString, err := token.SignedString([]byte(conf.GetEnv("DEVISE_JWT_SECRET_KEY")))
@@ -74,6 +78,7 @@ func Encoder(payload Payload) string {
 	return tokenString
 }
 
+//解码
 func Decoder(tokenString string) (string, string, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &Payload{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {

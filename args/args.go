@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin/binding"
 )
 
+//获取单个param 从json或者params（url)
 func Param(c *gin.Context, key string) string {
 	if c.ContentType() == binding.MIMEJSON {
 		bodyBytes, _ := ioutil.ReadAll(c.Request.Body)
@@ -24,6 +25,7 @@ func Param(c *gin.Context, key string) string {
 	return c.Request.FormValue(key)
 }
 
+//获取多个param 从json或者params（url)
 func Params(c *gin.Context) map[string]string {
 	sec := make(map[string]string)
 	if c.ContentType() == binding.MIMEJSON {
@@ -39,6 +41,7 @@ func Params(c *gin.Context) map[string]string {
 	return sec
 }
 
+//json绑定所需结构体
 type SignUp struct {
 	Email           string `form:"email" json:"email" xml:"email" binding:"required"`
 	Password        string `form:"password" json:"password" xml:"password" binding:"required"`

@@ -34,6 +34,7 @@ func newRDB() *redis.Client {
 	})
 }
 
+//连接redis数据库
 func ConnectRedis() {
 	RDB = newRDB()
 	_, err := RDB.Ping(ctx).Result()
@@ -49,6 +50,7 @@ func getRDB() *redis.Client {
 	return newRDB()
 }
 
+//redis操作 函数命名与redis实际操作中一致
 func Get(key string) string {
 	value, err := getRDB().Get(ctx, key).Result()
 	if err != nil {
