@@ -99,7 +99,7 @@ Golang-pangu is based on following tools
 
   Post `http://localhost:3002/users/sign_in`
 
-  params: email, password
+  params: email, password, DEVICE_TYPE, login_type
 
   You will get a header with authorization parameter from response after logging in successfully
 

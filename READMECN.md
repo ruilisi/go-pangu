@@ -88,19 +88,18 @@ Golang-pangu基于以下的工具
 
 ## Api 样例
 
-* ### sign_up
+* ### sign_up (用户注册)
   Post `http://localhost:3002/users/sign_up`
 
   params: email, password, password_confirm
 
-  用户注册
 
-* ### sign_in
+* ### sign_in (用户登录)
     Post `http://localhost:3002/users/sign_in`
 
-    params: email, password
+    params: email, password, login_type, DEVICE_TYPE
 
-  用户登录，成功后会在头部返回Authorization，这是后续用户接口需要的token
+  成功后会在头部返回Authorization，这是后续用户接口需要的token
 
 * ### auth_ping
     Get `http://localhost:3002/auth_ping`

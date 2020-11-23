@@ -7,6 +7,7 @@ import (
 	"go-pangu/models"
 	"go-pangu/util"
 	"net/http"
+	"sync"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -89,4 +90,55 @@ func SignInHandler(c *gin.Context) {
 
 	c.Header("Authorization", "Bearer "+tokenString)
 	c.JSON(http.StatusOK, gin.H{"status": "login success"})
+}
+
+//创建十个账户，如果其中一个创建失败，一起失败。整合了并发跟数据库回滚和超时。
+//create ten users,if one fail,both fail.(with goroutine,database rollback,time out)
+func CreateUsersHandler(c *gin.Context) {
+	var (
+		params map[string]interface{}
+	)
+
+	if err := c.ShouldBindJSON(&params); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	password := params["password"].(string)
+
+	ch := make(chan string, 2) //get error message
+	finish := make(chan int)   // get finish signal
+	var wg sync.WaitGroup
+	tx := db.DB.Begin()
+	wg.Add(10)
+
+	for i := 0; i < 10; i++ {
+		go func() {
+			bcryptedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+			if err != nil {
+				ch <- "fail"
+				ch <- err.Error()
+				return
+			}
+			user1 := &models.User{Email: RandStringRunes(6, LetterRunes) + params["email"].(string),
+				EncryptedPassword: string(bcryptedPassword)}
+			err = tx.Create(user1).Error
+			if err != nil {
+				ch <- "fail"
+				ch <- err.Error()
+				return
+			}
+			defer wg.Done()
+		}()
+	}
+
+	go func() {
+		wg.Wait()
+		finish <- 1
+	}()
+
+	resp := map[string]interface{}{
+		"status": "success",
+	}
+	Select(c, tx, ch, finish, resp)
 }
