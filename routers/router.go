@@ -42,6 +42,8 @@ func SetupRouter() *gin.Engine {
 	router.GET("/ping", service.PingHandler)
 	router.POST("/sms", service.SMSHandler)
 	router.POST("/users", service.CreateUsersHandler)
+	router.POST("/alipay", service.AliPayHandler)
+	router.POST("/alipay_notify", service.AliPayNotifyHandler)
 	//	router.GET("")
 	authorized := router.Group("/")
 	authorized.Use(middleware.Auth("user"))
