@@ -10,6 +10,7 @@ require (
 	github.com/go-playground/validator/v10 v10.3.0 // indirect
 	github.com/go-redis/redis/v8 v8.0.0-beta.7
 	github.com/go-resty/resty/v2 v2.3.0
+	github.com/gogf/gf v1.14.5
 	github.com/google/uuid v1.1.1
 	github.com/iGoogle-ink/gopay v1.5.20
 	github.com/imroc/req v0.3.0
