@@ -3,6 +3,8 @@ module go-pangu
 go 1.13
 
 require (
+	github.com/cbrake/influxdbhelper v2.1.0+incompatible
+	github.com/cbrake/influxdbhelper/v2 v2.1.4
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/getsentry/sentry-go v0.7.0
 	github.com/gin-contrib/cors v1.3.1
@@ -14,6 +16,8 @@ require (
 	github.com/google/uuid v1.1.1
 	github.com/iGoogle-ink/gopay v1.5.20
 	github.com/imroc/req v0.3.0
+	github.com/influxdata/influxdb v1.8.3 // indirect
+	github.com/influxdata/influxdb1-client v0.0.0-20200827194710-b269163b24ab
 	github.com/jinzhu/gorm v1.9.16
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/judwhite/go-svc v1.1.2
