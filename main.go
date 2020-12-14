@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"go-pangu/args"
 	"go-pangu/db"
-	"go-pangu/influx"
 	"go-pangu/models"
 	"go-pangu/redis"
 	"go-pangu/routers"
@@ -24,7 +23,7 @@ type program struct {
 
 func (p *program) Init(env svc.Environment) error {
 	redis.ConnectRedis()
-	influx.ConnectInflux()
+	// influx.ConnectInflux()
 	return nil
 }
 
@@ -34,7 +33,7 @@ func (p *program) Start() error {
 	case "create":
 		fmt.Println("creating database")
 		db.Create()
-		influx.Init()
+		// influx.Init()
 		syscall.Kill(syscall.Getpid(), syscall.SIGINT)
 	case "migrate":
 		fmt.Println("migrating tables")

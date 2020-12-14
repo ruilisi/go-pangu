@@ -1,8 +1,6 @@
 package influx
 
 import (
-	"time"
-
 	"github.com/cbrake/influxdbhelper/v2"
 )
 
@@ -19,12 +17,4 @@ type UserInfo struct {
 	UserName          string `influx:"user_name,tag"`
 	Local             string `influx:"local"`
 	Version           string `influx:"version"`
-}
-
-type UserInfoRead struct {
-	InfluxMeasurement influxdbhelper.Measurement
-	Time              time.Time `influx:"time"`
-	UserName          string    `influx:"user_name,tag"`
-	Local             string    `influx:"local"`
-	Version           string    `influx:"version"`
 }

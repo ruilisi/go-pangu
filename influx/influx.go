@@ -34,10 +34,10 @@ func Init() (err error) {
 }
 
 // write data to database
-func WritePoints(points []Point) {
+func WritePoints(points []interface{}) {
 	c = c.UseDB(db)
 	for _, p := range points {
-		err := c.WritePoint(p.Struct)
+		err := c.WritePoint(p)
 		if err != nil {
 			log.Fatal("Error writing point: ", err)
 		}
@@ -46,10 +46,7 @@ func WritePoints(points []Point) {
 
 // query data from db
 func ReadPoints(query string, points interface{}) interface{} {
-	fmt.Println(12)
 	err := c.UseDB(db).DecodeQuery(query, &points)
-	fmt.Println(&points)
-	fmt.Println(err)
 	if err != nil {
 		log.Fatal("Query error: ", err)
 	}
