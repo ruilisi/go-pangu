@@ -76,6 +76,8 @@ Golang-pangu is based on following tools
 |[redis](https://github.com/ruilisi/go-pangu/tree/master/redis)|redis connection and operations|
 |[router](https://github.com/ruilisi/go-pangu/tree/master/routers)|router|
 |[test](https://github.com/ruilisi/go-pangu/tree/master/test)|test|
+|[i18n](https://github.com/ruilisi/go-pangu/tree/master/i18n)|internationalization|
+|[influx](https://github.com/ruilisi/go-pangu/tree/master/influx)|influx operations include read/save point|
 
 
 ## Start
@@ -117,6 +119,57 @@ Golang-pangu is based on following tools
 
   Modify user's password, which needs authorization
 
+* ### cities
+
+    Post `http://localhost:3002/cities`
+
+    params: language
+
+    set language to en, return cities in English.
+    set language to zh, return cities in Chinese.
+
+
+### sms api
+(Tencent service, need to set your key in application.yml )
+
+* ### sms
+
+  Get `http://localhost:3002/sms`
+
+  params: mobile
+
+  send sms
+
+### influx apis
+(need to install influxdb and modify main.go)
+
+* ### influx_save
+
+  Post `http://localhost:3002/influx_save`
+
+  params: user_name, local, version
+
+  save struct in influxdb
+
+* ### influx_show
+
+  Post `http://localhost:3002/influx_save`
+
+  get struct message in influxdb
+
+### pay apis
+(Alipay service, need to set you key in application.yml)
+* ### alipay
+
+  Post `http://localhost:3002/alipay`
+
+  create alipay bill
+
+* ### alipay_notify
+
+    Post `http://localhost:3002/alipay_notify`
+
+    receive pay details notify
 
 ## other public library
   [Rails-pangu](https://github.com/ruilisi/rails-pangu) is a Rails 6(API Only) boilerplate which follows cutting-edge solutions already adopted by the industry, notablly, Devise, JWT(JSON Web Tokens), Postgres, Redis, Docker, Rspec, RuboCop, CircleCI. It is a solid production-ready starting point for your new backend projects.
@@ -161,4 +214,3 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
-

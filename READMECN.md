@@ -77,6 +77,8 @@ Golang-pangu基于以下的工具
 |[redis](https://github.com/ruilisi/go-pangu/tree/master/redis)|包含连接redis和redis操作函数|
 |[router](https://github.com/ruilisi/go-pangu/tree/master/routers)|路由|
 |[test](https://github.com/ruilisi/go-pangu/tree/master/test)|测试|
+|[i18n](https://github.com/ruilisi/go-pangu/tree/master/i18n)|国际化包|
+|[influx](https://github.com/ruilisi/go-pangu/tree/master/influx)|influx数据库操作|
 
 ## 开始运行
 1. 安装postgres和redis数据库
@@ -110,6 +112,58 @@ Golang-pangu基于以下的工具
     Post `http://localhost:3002/users/change_password`
 
   修改用户密码，需要user的token
+
+* ### cities
+
+    Post `http://localhost:3002/cities`
+
+    params: language
+
+    设置成en时，返回英文城市列表，zh时为中文城市列表
+
+
+### sms api
+腾讯云服务，需要自行在application配置文件设置key
+
+* ### sms
+
+    Get `http://localhost:3002/sms`
+
+    params: mobile
+
+    发送短信接口
+
+### influx apis
+需要安装influxdb后，修改main.go然后执行初始化操作
+
+* ### influx_save
+
+    Post `http://localhost:3002/influx_save`
+
+    params: user_name, local, version
+
+    将结构化数据保存在influxdb数据库
+
+* ### influx_show
+
+    Post `http://localhost:3002/influx_save`
+
+    读取influxdb数据库
+
+### pay apis
+支付宝支付接口，需要自行在application配置文件设置key
+* ### alipay
+
+    Post `http://localhost:3002/alipay`
+
+    创建支付宝账单
+
+* ### alipay_notify
+
+    Post `http://localhost:3002/alipay_notify`
+
+    接收支付信息的回调
+
 
 ## 其他公开库
 [Rails-pangu](https://github.com/ruilisi/rails-pangu) 基于 **Rails 6(API Only)** 框架搭建的一站式服务开发的技术解决方案
@@ -154,4 +208,3 @@ Golang-pangu基于以下的工具
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 该项目遵循[贡献者](https://github.com/all-contributors/all-contributors)规范。欢迎任何形式的捐助！
-
