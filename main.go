@@ -33,7 +33,6 @@ func (p *program) Start() error {
 	case "create":
 		fmt.Println("creating database")
 		db.Create()
-		// influx.Init()
 		syscall.Kill(syscall.Getpid(), syscall.SIGINT)
 	case "migrate":
 		fmt.Println("migrating tables")
@@ -49,6 +48,8 @@ func (p *program) Start() error {
 			db.Drop()
 		}
 		syscall.Kill(syscall.Getpid(), syscall.SIGINT)
+	case "createInflux":
+		// influx.Init()
 	default:
 		fmt.Println("server starting...")
 		db.Open("")

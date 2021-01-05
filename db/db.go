@@ -32,19 +32,25 @@ func Open(env string) {
 //创建数据库
 func Create() {
 	dbURL := conf.GetEnv("DATABASE_URL")
-	if uri, err := url.Parse(dbURL); err != nil {
+	dbTestURL := conf.GetEnv("DATABASE_TESTURL")
+	uri, err := url.Parse(dbURL)
+	if err != nil {
 		panic(err)
-	} else {
-		path := uri.Path
-		uri.Path = ""
-		baseDb, err := gorm.Open(postgres.Open(uri.String()), &gorm.Config{})
-		if err != nil {
-			panic(err)
-		}
-		baseDb.Exec(fmt.Sprintf("CREATE DATABASE %s;", path[1:]))
-		if conf.GetEnv("GIN_ENV") != "production" {
-			baseDb.Exec(fmt.Sprintf("CREATE DATABASE %s;", "go_pangu_test"))
-		}
+	}
+	testURI, err := url.Parse(dbTestURL)
+	if err != nil {
+		panic(err)
+	}
+	path := uri.Path
+	testPath := testURI.Path
+	uri.Path = ""
+	baseDb, err := gorm.Open(postgres.Open(uri.String()), &gorm.Config{})
+	if err != nil {
+		panic(err)
+	}
+	baseDb.Exec(fmt.Sprintf("CREATE DATABASE %s;", path[1:]))
+	if conf.GetEnv("GIN_ENV") != "production" {
+		baseDb.Exec(fmt.Sprintf("CREATE DATABASE %s;", testPath[1:]))
 	}
 }
 
