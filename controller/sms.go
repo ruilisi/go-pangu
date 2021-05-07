@@ -84,6 +84,7 @@ func SMSHandler(c *gin.Context) {
 	//返回结果
 	if err != nil {
 		StatusError(c, http.StatusInternalServerError, "failed", err.Error())
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"result": "send success",

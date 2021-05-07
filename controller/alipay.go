@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"go-pangu/conf"
 	"net/http"
 
@@ -71,7 +70,6 @@ func AliPayNotifyHandler(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(tradeStatus)
 	//固定设置返回的值
 	c.String(http.StatusOK, "%s", "success")
 }
