@@ -83,7 +83,12 @@ Golang-pangu基于以下的工具
 ## 开始运行
 1. 安装postgres和redis数据库
 2. 配置根目录下的 **application.yml** 配置文件
-3. go run 运行 main.go
+3.
+```sh
+`make create`(创建数据库) 或者 `go run main.go -db=create`
+`make migrate`(初始数据库表) 或者 `go run main.go -db=migrate`
+`make watch`(支持热更新) 或者 `go run main.go`
+```
 4. 在浏览器打开 `http://localhost:3002/ping` 会显示pong，表明服务成功部署
 
 

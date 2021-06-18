@@ -47,7 +47,6 @@ func SetupRouter() *gin.Engine {
 	router.POST("/cities", service.CityListHandler)
 	router.POST("/influx_save", service.SaveInfluxDBHandler)
 	router.POST("/influx_show", service.ShowInfuxDBHandler)
-	//	router.GET("")
 	authorized := router.Group("/")
 	authorized.Use(middleware.Auth("user"))
 	{

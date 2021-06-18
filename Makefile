@@ -44,3 +44,12 @@ test:
 
 ptest:
 	@-ginkgo -focus="Pressure test"
+
+watch:
+	air
+
+create:
+	go run $(GOBASE)/main.go -db=create
+
+migrate:
+	go run $(GOBASE)/main.go -db=migrate

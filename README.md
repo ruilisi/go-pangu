@@ -84,7 +84,12 @@ Golang-pangu is based on following tools
 
 1. install postgres, redis
 2. config application.yml
-3. go run main.go
+3.
+```sh
+`make create`(create database) or `go run main.go -db=create`
+`make migrate`(migrate tables) or `go run main.go -db=migrate`
+`make watch`(with hot reload) or `go run main.go`
+```
 4. open `http://localhost:3002/ping` in web browser, and then you will get a "pong" response
 
 ## Api examples

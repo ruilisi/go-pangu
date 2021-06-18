@@ -5,7 +5,10 @@ go 1.13
 require (
 	github.com/cbrake/influxdbhelper v2.1.0+incompatible
 	github.com/cbrake/influxdbhelper/v2 v2.1.4
+	github.com/cosmtrek/air v1.27.3 // indirect
+	github.com/creack/pty v1.1.13 // indirect
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/fatih/color v1.12.0 // indirect
 	github.com/getsentry/sentry-go v0.7.0
 	github.com/gin-contrib/cors v1.3.1
 	github.com/gin-gonic/gin v1.6.3
@@ -21,13 +24,15 @@ require (
 	github.com/jinzhu/gorm v1.9.16
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/judwhite/go-svc v1.1.2
+	github.com/mattn/go-isatty v0.0.13 // indirect
 	github.com/onsi/ginkgo v1.10.3
 	github.com/onsi/gomega v1.7.1
+	github.com/pelletier/go-toml v1.9.3 // indirect
 	github.com/qinxin0720/QcloudSms-go v1.0.0
 	github.com/spf13/viper v1.7.1
 	github.com/thoas/go-funk v0.7.0
 	golang.org/x/crypto v0.0.0-20200709230013-948cd5f35899
-	golang.org/x/sys v0.0.0-20200812155832-6a926be9bd1d // indirect
+	golang.org/x/sys v0.0.0-20210616094352-59db8d763f22 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/gormigrate.v1 v1.6.0
 	gopkg.in/yaml.v2 v2.3.0 // indirect
