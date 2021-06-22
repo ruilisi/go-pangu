@@ -18,7 +18,7 @@ full_bin = "APP_ENV=dev APP_USER=air ./tmp/main"
 # 监听以下文件扩展名的文件.
 include_ext = ["go", "tpl", "tmpl", "html"]
 # 忽略这些文件扩展名或目录
-exclude_dir = ["assets", "tmp", "vendor", "frontend/node_modules"]
+exclude_dir = ["assets", "tmp", "vendor", "web/node_modules"]
 # 监听以下指定目录的文件
 include_dir = []
 # 排除以下文件

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"go-pangu/websocket"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,8 +13,20 @@ var cities = []string{
 	"City_Peking",
 }
 
+// WSAuthedUser broadcasts event to authed user
+func WSAuthedUser(typ string, data map[string]interface{}) {
+	hub := websocket.GetHub()
+	data["type"] = typ
+	hub.SysBroadcastJSON("websocketTest", data)
+}
+
+func wsTest() {
+	WSAuthedUser("test", map[string]interface{}{})
+}
+
 func PingHandler(c *gin.Context) {
 	//ping接口，测试连通性
+	wsTest()
 	c.String(http.StatusOK, "pong")
 }
 
