@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"go-pangu/args"
+	"go-pangu/conf"
 	"go-pangu/db"
 	"go-pangu/models"
 	"go-pangu/redis"
@@ -22,6 +23,7 @@ type program struct {
 }
 
 func (p *program) Init(env svc.Environment) error {
+	conf.ReadConf()
 	redis.ConnectRedis()
 	// influx.ConnectInflux()
 	return nil

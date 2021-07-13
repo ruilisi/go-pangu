@@ -9,6 +9,7 @@ import (
 	"go-pangu/conf"
 	service "go-pangu/controller"
 	"go-pangu/middleware"
+	"go-pangu/websocket"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -39,6 +40,7 @@ func SetupRouter() *gin.Engine {
 	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization"}
 	router.Use(cors.New(config))
 
+	router.Any("/ws", websocket.HandleWebsocket)
 	router.GET("/ping", service.PingHandler)
 	router.POST("/sms", service.SMSHandler)
 	router.POST("/users", service.CreateUsersHandler)
