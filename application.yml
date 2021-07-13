@@ -1,18 +1,18 @@
 DEVISE_JWT_SECRET_KEY: RANDOM_SECRET
 HTTP_PORT: 3002
-BASE_DATABASE_URL: postgres://postgres:postgres@localhost:5432
-DATABASE_URL: postgres://postgres:postgres@localhost:5432/go_pangu_development?sslmode=disable
-DATABASE_TESTURL: postgres://postgres:postgres@localhost:5432/go_pangu_test?sslmode=disable
-REDIS_URL: redis://localhost:6379/7
+BASE_DATABASE_URL: postgres://postgres:postgres@119.29.25.51:5432
+DATABASE_URL: postgres://postgres:postgres@119.29.25.51:5432/go_pangu_development?sslmode=disable
+DATABASE_TESTURL: postgres://postgres:postgres@119.29.25.51:5432/go_pangu_test?sslmode=disable
+REDIS_URL: redis://119.29.25.51:6379/7
 WORKERS: CollectIpWorker,QcloudSmsWorker
-SMS_APPID:  
-SMS_APPKEY: 
-SMS_TEMPID: 
-SMS_APPLYTEMPID: 
-ALIPAY_APP_ID: 
-ALIPAY_PRIVATE_KEY: 
-ALIPAY_PUBLIC_KEY: 
-ALIPAY_URL: 
+SMS_APPID:
+SMS_APPKEY:
+SMS_TEMPID:
+SMS_APPLYTEMPID:
+ALIPAY_APP_ID:
+ALIPAY_PRIVATE_KEY:
+ALIPAY_PUBLIC_KEY:
+ALIPAY_URL:
 INFLUXDB_DB: go_pangu
 INFLUXDB_HOST: localhost
-INFLUXDB_PORT: '8086'
+INFLUXDB_PORT: "8086"
