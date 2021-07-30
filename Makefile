@@ -17,10 +17,10 @@ SUBDIRS := c/
 all: debug release
 
 debug:
-	$(GOBUILD) -tags debug -o $(GODIST)/$(PROJECTNAME)-$(GOARCH)-debug-$(GOOS)
+	$(GOBUILD) -tags debug -o $(GODIST)/$(PROJECTNAME)-$(GOARCH)-debug-linux
 
 release:
-	$(GOBUILD) -tags release -o $(GODIST)/$(PROJECTNAME)-$(GOARCH)-release-$(GOOS)
+	$(GOBUILD) -tags release -o $(GODIST)/$(PROJECTNAME)-$(GOARCH)-release-linux
 
 go-get:
 	@echo "  >  Checking if there is any missing dependencies..."
